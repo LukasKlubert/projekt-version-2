@@ -14,14 +14,16 @@ date: 2026-08-23
 
 ## 1. Současný tým
 
-| Role      | Mechanismus         | Soubor                              | Vyvolání                    | Model                                                 |
-| --------- | ------------------- | ----------------------------------- | --------------------------- | ----------------------------------------------------- |
+| Role      | Mechanismus         | Soubor                              | Vyvolání                    | Model                                              |
+| --------- | ------------------- | ----------------------------------- | --------------------------- | -------------------------------------------------- |
 | Architekt | Custom Mode (skill) | `.cursor/skills/architekt/SKILL.md` | `/architekt` + `Alt+Enter`  | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
-| Vývojář   | subagent            | `.cursor/agents/vyvojar.md`         | `/vyvojar`                  | pinnuto `claude-4.5-sonnet-thinking`                  |
-| Auditor   | Custom Mode (skill) | `.cursor/skills/auditor/SKILL.md`   | `/auditor` + `Alt+Enter`    | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
+| Vývojář   | subagent            | `.cursor/agents/vyvojar.md`         | `/vyvojar`                  | pinnuto `claude-4.5-sonnet-thinking`               |
+| Auditor   | Custom Mode (skill) | `.cursor/skills/auditor/SKILL.md`   | `/auditor` + `Alt+Enter`    | ruční výběr, doporučeno `gpt-5.6-sol-medium`      |
 | CTO       | Custom Mode (skill) | `.cursor/skills/cto/SKILL.md`       | `/cto` + `Alt+Enter`        | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
 
-Plus dva workflow skills (`novy-ukol`, `pred-commitem`) a pět pravidel v `.cursor/rules/`.
+Plus tři workflow skills (`novy-ukol`, `pred-commitem`, `audit`) a pět pravidel v `.cursor/rules/`.
+
+**Změna modelu u Auditora (2026-08-23):** Přepnut z Opus na GPT Sol. GPT je silný na analytiku, logiku a edge cases, což přesně sedí na kontrolu SM-2 výpočtů a strict TypeScriptu. Křížová kontrola mezi rodinami modelů (Vývojář Sonnet, Auditor GPT) je cennější než to, že by oba byli na nejvyšším modelu. Pro kritické audity přidán skill `/audit`, který systematicky používá všechny tři modely včetně Opus.
 
 **Poznámka k názvům:** role se v textu jmenují česky (Vývojář, Auditor), ale slugy jsou bez diakritiky (`vyvojar`, `auditor`), protože `name` má být podle dokumentace malá písmena a pomlčky. Role byly přejmenované 2026-08-23 z původních `impl` a `reviewer` na Lukášovo přání.
 
@@ -35,7 +37,7 @@ Nerozbíjej je bez důvodu. Každé z nich vzniklo z konkrétní úvahy, která 
 
 **Architekt, Auditor a CTO jsou Custom Modes, ne subagenti.** Všechny tři role těží z dlouhého vlastního chatu, kde se rozhodnutí a připomínky vrství. Architekt má držet nit („kam patří stav" má platit i pro navazující featury), Auditor má poznat vracející se chybu, CTO má pamatovat, proč tým vypadá, jak vypadá. Subagent volaný přes `/` startuje pokaždé s čistým kontextem.
 
-**Auditor má jiný model než Vývojář.** Kdo kontroluje na stejném modelu jako autor, má stejná slepá místa. Proto Vývojář Sonnet, Auditor Opus.
+**Auditor má jiný model než Vývojář.** Kdo kontroluje na stejném modelu jako autor, má stejná slepá místa. Vývojář běží na Sonnetu, Auditor na GPT Sol — křížová kontrola mezi rodinami modelů. GPT je silný na analytiku a edge cases, což sedí na kontrolu výpočtů a strict TypeScriptu. Pro opravdu kritické věci (migrace schématu, velký refaktor) je skill `/audit`, který systematicky používá všechny tři modely včetně Opus.
 
 **Architekt, Auditor ani CTO nepíšou aplikační kód.** Vynucené promptem, ne technicky. U subagenta by šlo použít `readonly: true`; u Custom Mode takové pole neexistuje, takže je to jen instrukce v promptu. CTO smí editovat `.cursor/` a `.notes/`, protože to je přesně jeho práce.
 

@@ -147,14 +147,18 @@ Vytvořit jasné, ale flexibilní guidelines
 
 Tabulky výše jsou **referenční přehled modelů**, ne návrh týmu. Skutečný tým je postavený opačně: role se definují podle práce, která se na projektu reálně dělá, a model se přiřadí až jako parametr.
 
-| Role      | Vyvolání                   | Model                                        |
-| --------- | -------------------------- | -------------------------------------------- |
-| Architekt | `/architekt` + `Alt+Enter` | `claude-opus-5-thinking-high` (vybrat ručně) |
-| Vývojář   | `/vyvojar`                 | `claude-4.5-sonnet-thinking` (napevno)       |
-| Auditor   | `/auditor` + `Alt+Enter`   | `claude-opus-5-thinking-high` (vybrat ručně) |
-| CTO       | `/cto` + `Alt+Enter`       | `claude-opus-5-thinking-high` (vybrat ručně) |
+| Role      | Vyvolání                   | Model                                     |
+| --------- | -------------------------- | ----------------------------------------- |
+| Architekt | `/architekt` + `Alt+Enter` | `claude-opus-5-thinking-high` (default)   |
+| Vývojář   | `/vyvojar`                 | `claude-4.5-sonnet-thinking` (napevno)    |
+| Auditor   | `/auditor` + `Alt+Enter`   | `gpt-5.6-sol-medium` (default)            |
+| CTO       | `/cto` + `Alt+Enter`       | `claude-opus-5-thinking-high` (default)   |
 
 - **Jak tým používat:** [jak-pouzivat-tym.md](jak-pouzivat-tym.md)
 - **Jak tým rozšiřovat o další specialisty:** [cto-playbook.md](cto-playbook.md)
 
-Poznámka k modelům: model jde napevno nastavit jen u subagenta (pole `model` v `.cursor/agents/*.md`). Custom Mode takové pole nemá, takže se u Architekta, Auditora a CTO vybírá ručně v pickeru chatu.
+**Poznámky:**
+
+- Model jde napevno nastavit jen u subagenta (pole `model` v `.cursor/agents/*.md`). Custom Mode takové pole nemá, takže se u Architekta, Auditora a CTO vybírá ručně v pickeru chatu.
+- Auditor má záměrně jiný model než Vývojář (křížová kontrola). GPT je silný na analytiku a edge cases, což sedí na kontrolu výpočtů a strict TypeScriptu.
+- Pro kritické audity (migrace, velký refaktor) použij `/audit` — komplexní kontrola přes GPT, Sonnet i Opus.

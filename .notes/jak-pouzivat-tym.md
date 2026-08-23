@@ -77,12 +77,14 @@ Umí UI i logiku, sám pozná, o co jde. Model má napevno nastavený, nemusíš
 **Jak:**
 
 1. `/auditor` → `Alt+Enter` na zvýrazněné položce
-2. Vyber model `claude-opus-5-thinking-high`
+2. Vyber model `gpt-5.6-sol-medium` (nebo `claude-opus-5-thinking-high` pro kritický audit)
 3. Napiš „zkontroluj změny"
 
 **Co dostaneš:** Nálezy roztříděné na blokující, doporučené a drobnosti. **Nic neopraví** — opravu zadáš Vývojáři přes `/vyvojar`.
 
 Taky si nech chat otevřený. Auditor pak pozná, když se stejná chyba vrací.
+
+**Pro velké věci:** Před migracemi, velkými refaktory nebo když se nahromadilo víc featur, použij `/audit` — komplexní kontrola přes tři modely (GPT, Sonnet, Opus).
 
 ---
 
@@ -100,12 +102,13 @@ Playbook si přečte sám, nemusíš ho nikam připojovat. Aplikační kód nep�
 
 ---
 
-## Dvě zkratky navíc
+## Další zkratky
 
 Napiš v chatu `/` a vyber:
 
 - **`/novy-ukol`** — provede tě celým postupem od zadání po commit, ať na nic nezapomeneš
 - **`/pred-commitem`** — kontrolní seznam: lint, testy, typy, ruční ověření
+- **`/audit`** — komplexní audit celého systému přes tři modely, použij před velkými změnami nebo po dlouhé pauze
 
 ---
 
@@ -171,7 +174,8 @@ Pozor, `--hard` zahazuje neuloženou práci nenávratně. Proto commituj často 
 │   ├── auditor/                Custom Mode
 │   ├── cto/                    Custom Mode
 │   ├── novy-ukol/              /novy-ukol
-│   └── pred-commitem/          /pred-commitem
+│   ├── pred-commitem/          /pred-commitem
+│   └── audit/                  /audit (komplexní kontrola)
 └── rules/                      konvence projektu, aplikují se samy
 
 .notes/
