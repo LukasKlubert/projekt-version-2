@@ -14,13 +14,16 @@ date: 2026-08-23
 
 ## 1. Současný tým
 
-| Role          | Mechanismus         | Soubor                              | Vyvolání                | Model                                                 |
-| ------------- | ------------------- | ----------------------------------- | ----------------------- | ----------------------------------------------------- |
-| Architekt     | Custom Mode (skill) | `.cursor/skills/architekt/SKILL.md` | `Alt+Enter` → Architekt | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
-| Implementátor | subagent            | `.cursor/agents/impl.md`            | `/impl` v chatu         | pinnuto `claude-4.5-sonnet-thinking`                  |
-| Reviewer      | Custom Mode (skill) | `.cursor/skills/reviewer/SKILL.md`  | `Alt+Enter` → Reviewer  | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
+| Role      | Mechanismus         | Soubor                              | Vyvolání                    | Model                                                 |
+| --------- | ------------------- | ----------------------------------- | --------------------------- | ----------------------------------------------------- |
+| Architekt | Custom Mode (skill) | `.cursor/skills/architekt/SKILL.md` | `/architekt` + `Alt+Enter`  | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
+| Vývojář   | subagent            | `.cursor/agents/vyvojar.md`         | `/vyvojar`                  | pinnuto `claude-4.5-sonnet-thinking`                  |
+| Auditor   | Custom Mode (skill) | `.cursor/skills/auditor/SKILL.md`   | `/auditor` + `Alt+Enter`    | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
+| CTO       | Custom Mode (skill) | `.cursor/skills/cto/SKILL.md`       | `/cto` + `Alt+Enter`        | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
 
 Plus dva workflow skills (`novy-ukol`, `pred-commitem`) a pět pravidel v `.cursor/rules/`.
+
+**Poznámka k názvům:** role se v textu jmenují česky (Vývojář, Auditor), ale slugy jsou bez diakritiky (`vyvojar`, `auditor`), protože `name` má být podle dokumentace malá písmena a pomlčky. Role byly přejmenované 2026-08-23 z původních `impl` a `reviewer` na Lukášovo přání.
 
 ---
 
@@ -28,13 +31,13 @@ Plus dva workflow skills (`novy-ukol`, `pred-commitem`) a pět pravidel v `.curs
 
 Nerozbíjej je bez důvodu. Každé z nich vzniklo z konkrétní úvahy, která se z výsledku sama nepozná.
 
-**Implementátor dělá UI i logiku v jedné roli.** Původní návrh měl dva agenty (`ui-designer`, `logika-tester`). Sloučeny záměrně: featury v tomhle projektu skoro vždy sahají do obojího současně (export = tlačítko + generování; statistika = výpočet + zobrazení). Dva agenti se sdíleným checkoutem by se museli koordinovat a mohou si přepsat práci.
+**Vývojář dělá UI i logiku v jedné roli.** Původní návrh měl dva agenty (`ui-designer`, `logika-tester`). Sloučeny záměrně: featury v tomhle projektu skoro vždy sahají do obojího současně (export = tlačítko + generování; statistika = výpočet + zobrazení). Dva agenti se sdíleným checkoutem by se museli koordinovat a mohou si přepsat práci.
 
-**Architekt a Reviewer jsou Custom Modes, ne subagenti.** Obě role těží z dlouhého vlastního chatu, kde se rozhodnutí a připomínky vrství. Architekt má držet nit („kam patří stav" má platit i pro navazující featury), Reviewer má poznat vracející se chybu. Subagent volaný přes `/` startuje pokaždé s čistým kontextem.
+**Architekt, Auditor a CTO jsou Custom Modes, ne subagenti.** Všechny tři role těží z dlouhého vlastního chatu, kde se rozhodnutí a připomínky vrství. Architekt má držet nit („kam patří stav" má platit i pro navazující featury), Auditor má poznat vracející se chybu, CTO má pamatovat, proč tým vypadá, jak vypadá. Subagent volaný přes `/` startuje pokaždé s čistým kontextem.
 
-**Reviewer má jiný model než Implementátor.** Recenzent na stejném modelu jako autor má stejná slepá místa. Proto Implementátor Sonnet, Reviewer Opus.
+**Auditor má jiný model než Vývojář.** Kdo kontroluje na stejném modelu jako autor, má stejná slepá místa. Proto Vývojář Sonnet, Auditor Opus.
 
-**Architekt ani Reviewer needitují soubory.** Vynucené promptem, ne technicky. U subagenta by šlo použít `readonly: true`; u Custom Mode takové pole neexistuje, takže je to jen instrukce v promptu.
+**Architekt, Auditor ani CTO nepíšou aplikační kód.** Vynucené promptem, ne technicky. U subagenta by šlo použít `readonly: true`; u Custom Mode takové pole neexistuje, takže je to jen instrukce v promptu. CTO smí editovat `.cursor/` a `.notes/`, protože to je přesně jeho práce.
 
 **Role definujeme podle práce, model přiřazujeme až potom.** Opačný postup (jedna role na každý dostupný model) vyrobí role, které se nikdy nepoužijí. Viz `agent-specializace.md` — ta tabulka je referenční přehled modelů, ne návrh týmu.
 
@@ -131,7 +134,7 @@ Tohle je hlavní důvod existence tohoto dokumentu. Neodvozuj z toho závěry a 
 
 - **Subagenti nemají pole `tools`.** Allowlist ani denylist nástrojů na úrovni subagenta neexistuje. Subagenti dědí všechny nástroje od rodiče včetně MCP. Jediný přepínač je hrubé `readonly: true`. Granulární omezení jde jen přes hooks (`preToolUse`, `subagentStart`) nebo CLI permissions.
 - **Subagenti nemají `icon` ani `color`.** Ta pole patří skillům.
-- **Skills nemají pole `model`.** Custom Mode tedy nedokáže model vynutit — uživatel si ho vybírá v pickeru. Proto je u Architekta a Reviewera doporučený model napsaný v těle skillu jako poznámka.
+- **Skills nemají pole `model`.** Custom Mode tedy nedokáže model vynutit — uživatel si ho vybírá v pickeru. Proto je u Architekta, Auditora a CTO doporučený model napsaný v těle skillu jako poznámka.
 - **Cesta `.cursor/commands/`** se v aktuální dokumentaci nevyskytuje. Dokumentovaná je jen složka `commands/` uvnitř pluginu. Pro nová workflow piš skill, případně s `disable-model-invocation: true`, což dá stejné chování jako starý slash command.
 - **Argumenty u commandů** (`$ARGUMENTS`) — nedokumentováno. U prompt-based hooků `$ARGUMENTS` dokumentované je, ale to je jiný mechanismus.
 - **Kanonická tabulka model ID** se nepublikuje. Dokumentace uvádí jen příklady a formát s parametry v hranatých závorkách: `claude-opus-5[effort=high]`, `claude-opus-5[context=300k]`, `composer-2.5[fast=false]`. Sada parametrů se liší podle modelu.
@@ -265,18 +268,18 @@ src/routeTree.gen.ts         generovaný, needitovat
 
 ## 9. Rozšíření, o kterých se uvažovalo a zatím se neudělala
 
-- **Automatická delegace.** Cursor umí nechat hlavního agenta vybrat subagenta podle `description`. Tenhle tým to nevyužívá, protože se třemi rolemi je explicitní `/impl` přehlednější. Až rolí přibude, dobře napsané `description` znamená, že si uživatel nemusí pamatovat, koho volat.
+- **Automatická delegace.** Cursor umí nechat hlavního agenta vybrat subagenta podle `description`. Tenhle tým to nevyužívá, protože s jediným subagentem je explicitní `/vyvojar` přehlednější. Až subagentů přibude, dobře napsané `description` znamená, že si uživatel nemusí pamatovat, koho volat.
 - **Skill na migraci schématu localStorage.** Odloženo, dokud první migrace reálně nenastane. Až přijde, patří sem postup: zvýšit verzi klíče, napsat migrační funkci, otestovat ji na starých datech, ošetřit poškozený JSON.
 - **Hooks na automatický lint a test po editaci.** Uživatel je zatím nechtěl. Šlo by přes `afterFileEdit`.
 - **Izolované worktree pro subagenty.** Cursor umí dát subagentovi vlastní git worktree. Zajímavé, až by běželo víc implementátorů paralelně; při jednom je to zbytečná režie.
 
 ## 10. Záložní plán, kdyby Custom Mode nešel použít
 
-Pokud by se Architekt a Reviewer nedali v daném prostředí spustit jako režim, dají se překlopit na subagenty do `.cursor/agents/architekt.md` a `.cursor/agents/reviewer.md`. Získá se tím dvojí:
+Pokud by se Architekt, Auditor nebo CTO nedali v daném prostředí spustit jako režim, dají se překlopit na subagenty do `.cursor/agents/`. Získá se tím dvojí:
 
 - **`model` se dá vynutit** (`claude-opus-5-thinking-high`), takže se nemusí vybírat ručně
 - **`readonly: true`** technicky zabrání editaci souborů, místo aby to byla jen instrukce v promptu
 
-Cena za to je ztráta kontinuity: subagent startuje s čistým kontextem a nevidí předchozí konverzaci. Architekt by tedy nedržel nit mezi featurami a Reviewer by nepoznal vracející se chybu — což byl původní důvod, proč jsou to Custom Modes. Subagenta lze obnovit přes jeho agent ID, ale to je manuální krok, ne plynulý chat.
+Cena za to je ztráta kontinuity: subagent startuje s čistým kontextem a nevidí předchozí konverzaci. Architekt by tedy nedržel nit mezi featurami a Auditor by nepoznal vracející se chybu — což byl původní důvod, proč jsou to Custom Modes. Subagenta lze obnovit přes jeho agent ID, ale to je manuální krok, ne plynulý chat.
 
 Rozhodovat se tedy podle toho, co víc chybí: vynucený model, nebo návaznost.

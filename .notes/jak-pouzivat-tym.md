@@ -6,13 +6,20 @@ date: 2026-08-23
 
 # Jak používat vývojový tým
 
-Máš tři agenty. Každý umí něco jiného a voláš je jinak.
+Máš čtyři role. Každá umí něco jiného a voláš je jinak.
+
+| Role | Vyvolání | Na co |
+|---|---|---|
+| Architekt | `/architekt` + `Alt+Enter` | návrh featury |
+| Vývojář | `/vyvojar` | napsání kódu |
+| Auditor | `/auditor` + `Alt+Enter` | kontrola hotové práce |
+| CTO | `/cto` + `Alt+Enter` | tým, pravidla, směr projektu |
 
 ---
 
 ## Jak se zapíná Custom Mode
 
-Architekt a Reviewer běží jako Custom Mode — režim, ve kterém agent zůstane v roli po celý chat. Zapíná se takhle:
+Architekt, Auditor a CTO běží jako Custom Mode — režim, ve kterém agent zůstane v roli po celý chat. Zapíná se takhle:
 
 1. Napiš do chatu `/` a název role, třeba `/architekt`
 2. V roletce nechej položku **zvýrazněnou** — Enter nemačkej
@@ -47,14 +54,14 @@ Ten chat si nech otevřený a vracej se do něj. Architekt si tak pamatuje svoje
 
 ---
 
-### Implementátor — v běžném chatu
+### Vývojář — v běžném chatu
 
 **Kdy:** Máš plán a chceš ho realizovat. Nebo jde o drobnost, u které je návrh zbytečný.
 
-**Jak:** V normálním chatu napiš `/impl` a za to zadání.
+**Jak:** V normálním chatu napiš `/vyvojar` a za to zadání.
 
 ```
-/impl Přidej do profilu kartu s počtem splněných úkolů za tento týden
+/vyvojar Přidej do profilu kartu s počtem splněných úkolů za tento týden
 ```
 
 **Co dostaneš:** Napsaný kód, spuštěný lint a testy, na konci shrnutí, co ověřit v prohlížeči.
@@ -63,19 +70,33 @@ Umí UI i logiku, sám pozná, o co jde. Model má napevno nastavený, nemusíš
 
 ---
 
-### Reviewer — vlastní chat
+### Auditor — vlastní chat
 
 **Kdy:** Featura je hotová a chceš kontrolu, než to commitneš.
 
 **Jak:**
 
-1. `/reviewer` → `Alt+Enter` na zvýrazněné položce
+1. `/auditor` → `Alt+Enter` na zvýrazněné položce
 2. Vyber model `claude-opus-5-thinking-high`
 3. Napiš „zkontroluj změny"
 
-**Co dostaneš:** Nálezy roztříděné na blokující, doporučené a drobnosti. **Nic neopraví** — opravu zadáš Implementátorovi přes `/impl`.
+**Co dostaneš:** Nálezy roztříděné na blokující, doporučené a drobnosti. **Nic neopraví** — opravu zadáš Vývojáři přes `/vyvojar`.
 
-Taky si nech chat otevřený. Reviewer pak pozná, když se stejná chyba vrací.
+Taky si nech chat otevřený. Auditor pak pozná, když se stejná chyba vrací.
+
+---
+
+### CTO — vlastní chat
+
+**Kdy:** Chceš dalšího specialistu, měnit pravidla, nebo se rozhodnout, jak dál s celým projektem. Ne na konkrétní featuru.
+
+**Jak:**
+
+1. `/cto` → `Alt+Enter` na zvýrazněné položce
+2. Vyber model `claude-opus-5-thinking-high`
+3. Napiš, co potřebuješ
+
+Playbook si přečte sám, nemusíš ho nikam připojovat. Aplikační kód nepíše — na to deleguje Vývojáře.
 
 ---
 
@@ -98,21 +119,21 @@ Napiš v chatu `/` a vyber:
 2. Přečteš plán, souhlasíš
 
 3. V běžném chatu:
-   /impl Udělej export podle plánu od architekta
+   /vyvojar Udělej export podle plánu od architekta
    → napíše kód
 
-4. /reviewer + Alt+Enter (režim)
+4. /auditor + Alt+Enter (režim)
    "Zkontroluj export"
    → nálezy
 
 5. Případné opravy:
-   /impl Oprav chybějící aria-label u tlačítka Export
+   /vyvojar Oprav chybějící aria-label u tlačítka Export
 
 6. git add -A
    git commit -m "Export projektu do souboru"
 ```
 
-U drobností (překlep v textu, jiná barva) kroky 1 a 4 klidně přeskoč a jdi rovnou na `/impl`.
+U drobností (překlep v textu, jiná barva) kroky 1 a 4 klidně přeskoč a jdi rovnou na `/vyvojar`.
 
 ---
 
@@ -144,17 +165,18 @@ Pozor, `--hard` zahazuje neuloženou práci nenávratně. Proto commituj často 
 
 ```
 .cursor/
-├── agents/impl.md              Implementátor
+├── agents/vyvojar.md           Vývojář, voláš /vyvojar
 ├── skills/
 │   ├── architekt/              Custom Mode
-│   ├── reviewer/               Custom Mode
+│   ├── auditor/                Custom Mode
+│   ├── cto/                    Custom Mode
 │   ├── novy-ukol/              /novy-ukol
 │   └── pred-commitem/          /pred-commitem
 └── rules/                      konvence projektu, aplikují se samy
 
 .notes/
 ├── jak-pouzivat-tym.md         tenhle soubor
-├── cto-playbook.md             pro CTO chat, když bude přidávat další agenty
+├── cto-playbook.md             čte si CTO, když zakládá další agenty
 ├── agent-specializace.md       přehled modelů
 └── sablona.md                  šablona pro zadání
 ```
@@ -165,4 +187,4 @@ Pravidla v `.cursor/rules/` se agentům přidávají **automaticky**. Nemusíš 
 
 ## Chci dalšího specialistu
 
-Řekni to CTO chatu (tomu hlavnímu, kde jsme tým stavěli, nebo novému) a odkaž ho na `cto-playbook.md`. Je tam všechno, co potřebuje — formáty souborů, šablony a důvody dosavadních rozhodnutí. Nemusí nic dohledávat.
+Zapni si režim CTO (`/cto` + `Alt+Enter`) a řekni mu to. Playbook si přečte sám — jsou v něm formáty souborů, šablony i důvody dosavadních rozhodnutí, takže nemusí nic dohledávat.

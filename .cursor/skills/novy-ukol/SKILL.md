@@ -25,7 +25,7 @@ Plán si nech schválit uživatelem, než se implementuje. Návrh, který nikdo 
 
 ## 3. Implementace
 
-V hlavním chatu zavolej `/impl` a předej mu schválený plán. Ne zadání — plán. Implementátor má vědět, co má napsat, ne co si má rozmyslet.
+V hlavním chatu zavolej `/vyvojar` a předej mu schválený plán. Ne zadání — plán. Vývojář má vědět, co má napsat, ne co si má rozmyslet.
 
 Pokud je featura velká, rozděl ji na dvě až tři volání podle kroků z plánu, ať se dá průběžně kontrolovat.
 
@@ -33,7 +33,7 @@ Pokud je featura velká, rozděl ji na dvě až tři volání podle kroků z pl�
 
 Spusť `npm run lint` a `npm test`.
 
-Přepni se do režimu **Reviewer** (`/reviewer` a na zvýrazněné položce `Alt+Enter`) a nech si zkontrolovat diff. Blokující nálezy oprav přes `/impl`, pak nech zkontrolovat znovu.
+Přepni se do režimu **Auditor** (`/auditor` a na zvýrazněné položce `Alt+Enter`) a nech si zkontrolovat diff. Blokující nálezy oprav přes `/vyvojar`, pak nech zkontrolovat znovu.
 
 Ručně otevři dotčenou obrazovku v `npm run dev` a zkus i chování, které testy nepokrývají: reload stránky (přežila data?), úzké okno, prázdný stav.
 
