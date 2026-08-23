@@ -49,6 +49,7 @@ npm run dev
 ```
 
 Otevři dotčenou obrazovku a zkus:
+
 - **Reload stránky** — přežila data v localStorage?
 - **Úzké okno** (kolem 360 px) — nepřetéká layout?
 - **Prázdný stav** — co se zobrazí, když žádná data nejsou?

@@ -17,6 +17,7 @@ Máš tři agenty. Každý umí něco jiného a voláš je jinak.
 **Kdy:** Chceš novou featuru a nevíš, jak na to, nebo chceš mít jistotu, že to nerozbije stávající data.
 
 **Jak:**
+
 1. Stiskni `Alt+Enter`
 2. Vyber **Architekt**
 3. V pickeru modelů nahoře vyber `claude-opus-5-thinking-high`
@@ -49,6 +50,7 @@ Umí UI i logiku, sám pozná, o co jde. Model má napevno nastavený, nemusíš
 **Kdy:** Featura je hotová a chceš kontrolu, než to commitneš.
 
 **Jak:**
+
 1. `Alt+Enter`
 2. Vyber **Reviewer**
 3. Vyber model `claude-opus-5-thinking-high`

@@ -65,9 +65,7 @@ export function NewProjectDialog({
                 onClick={() => setKind(k.id)}
                 className={cn(
                   "rounded-2xl border border-border bg-surface-2/40 p-3 text-left transition-colors",
-                  kind === k.id
-                    ? "border-primary/50 bg-surface-2"
-                    : "hover:bg-surface-2/70",
+                  kind === k.id ? "border-primary/50 bg-surface-2" : "hover:bg-surface-2/70",
                 )}
               >
                 <p className="text-sm font-semibold">{k.title}</p>
@@ -93,11 +91,7 @@ export function NewProjectDialog({
             />
           </label>
 
-          <Button
-            className="w-full rounded-full"
-            onClick={create}
-            disabled={!name.trim()}
-          >
+          <Button className="w-full rounded-full" onClick={create} disabled={!name.trim()}>
             Vytvořit projekt
           </Button>
         </div>
@@ -105,4 +99,3 @@ export function NewProjectDialog({
     </Dialog>
   );
 }
-

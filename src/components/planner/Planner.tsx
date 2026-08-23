@@ -1,7 +1,24 @@
 import { useMemo, useState } from "react";
-import { GripVertical, ChevronLeft, ChevronRight, Clock, Lightbulb, CheckSquare, Plus, X, Trash2, Brain } from "lucide-react";
+import {
+  GripVertical,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Lightbulb,
+  CheckSquare,
+  Plus,
+  X,
+  Trash2,
+  Brain,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAppStore, weekDays, estimateMinutes as estimate, stripTags, type Tier } from "@/lib/app-store";
+import {
+  useAppStore,
+  weekDays,
+  estimateMinutes as estimate,
+  stripTags,
+  type Tier,
+} from "@/lib/app-store";
 import { useRepetitionTopics } from "./useRepetitionTopics";
 import { getRepetitionStatus } from "@/lib/sm2";
 
@@ -11,7 +28,10 @@ const TIERS: { id: Tier; label: string; dot: string }[] = [
   { id: "nice", label: "Nice to Have", dot: "bg-muted-foreground" },
 ];
 
-const SLOTS = [...weekDays.map((d) => ({ id: d.short, label: d.label })), { id: "anytime", label: "Kdykoliv tento týden" }];
+const SLOTS = [
+  ...weekDays.map((d) => ({ id: d.short, label: d.label })),
+  { id: "anytime", label: "Kdykoliv tento týden" },
+];
 
 const PANEL_TABS = [
   { id: "inbox", label: "Inbox" },
@@ -21,7 +41,8 @@ const PANEL_TABS = [
 type PanelTab = (typeof PANEL_TABS)[number]["id"];
 
 export function Planner() {
-  const { inbox, placements, setPlacement, removePlacement, removeFromInbox, addToInbox } = useAppStore();
+  const { inbox, placements, setPlacement, removePlacement, removeFromInbox, addToInbox } =
+    useAppStore();
   const [weekOffset, setWeekOffset] = useState(0);
   const [mobileTab, setMobileTab] = useState<"inbox" | "plan">("inbox");
   const [panelTab, setPanelTab] = useState<PanelTab>("inbox");
@@ -37,9 +58,7 @@ export function Planner() {
     const placedTopicIds = new Set(
       inbox.filter((i) => placements[i.id] && i.sourceTopicId).map((i) => i.sourceTopicId!),
     );
-    return allRepetition.filter(
-      (t) => !placedTopicIds.has(t.id),
-    );
+    return allRepetition.filter((t) => !placedTopicIds.has(t.id));
   }, [allRepetition, inbox, placements]);
 
   const totalMinutes = useMemo(
@@ -68,10 +87,13 @@ export function Planner() {
     setDraft(null);
   };
 
-  const weekLabel = weekOffset === 0 ? "Tento týden" : weekOffset < 0 ? `${Math.abs(weekOffset)} týden zpět` : `${weekOffset} týden vpřed`;
+  const weekLabel =
+    weekOffset === 0
+      ? "Tento týden"
+      : weekOffset < 0
+        ? `${Math.abs(weekOffset)} týden zpět`
+        : `${weekOffset} týden vpřed`;
   const detail = SLOTS.find((s) => s.id === detailSlot);
-
-
 
   return (
     <div className="space-y-4">
@@ -105,7 +127,9 @@ export function Planner() {
                 onClick={() => setPanelTab(t.id)}
                 className={cn(
                   "flex-1 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
-                  panelTab === t.id ? "bg-surface-2 text-foreground" : "text-muted-foreground hover:text-foreground",
+                  panelTab === t.id
+                    ? "bg-surface-2 text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {t.label}
@@ -131,7 +155,11 @@ export function Planner() {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm leading-snug">{stripTags(item.text)}</p>
                     <div className="mt-1.5 flex items-center gap-2 text-[11px] text-muted-foreground">
-                      {item.type === "idea" ? <Lightbulb className="h-3 w-3" /> : <CheckSquare className="h-3 w-3" />}
+                      {item.type === "idea" ? (
+                        <Lightbulb className="h-3 w-3" />
+                      ) : (
+                        <CheckSquare className="h-3 w-3" />
+                      )}
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" /> {estimate(item)} min
                       </span>
@@ -183,8 +211,14 @@ export function Planner() {
             {panelTab === "repeat" &&
               repetition.map((t) => {
                 const status = getRepetitionStatus(t);
-                const estimatedMinutes = t.isNew ? 25 : t.level === "hard" ? 30 : t.level === "medium" ? 20 : 15;
-                
+                const estimatedMinutes = t.isNew
+                  ? 25
+                  : t.level === "hard"
+                    ? 30
+                    : t.level === "medium"
+                      ? 20
+                      : 15;
+
                 return (
                   <li
                     key={t.id}
@@ -241,7 +275,8 @@ export function Planner() {
 
             {panelTab === "repeat" && repetition.length === 0 && (
               <li className="rounded-2xl border border-dashed border-border px-3 py-6 text-center text-xs text-muted-foreground">
-                Nic k naplánování — přidej témata ve study projektech, nebo počkej na splatnost po známce
+                Nic k naplánování — přidej témata ve study projektech, nebo počkej na splatnost po
+                známce
               </li>
             )}
 
@@ -258,9 +293,13 @@ export function Planner() {
           </ul>
         </section>
 
-
         {/* Týdenní plán */}
-        <section className={cn("flex flex-col gap-3 lg:h-full lg:overflow-hidden", mobileTab === "plan" ? "" : "hidden lg:block")}>
+        <section
+          className={cn(
+            "flex flex-col gap-3 lg:h-full lg:overflow-hidden",
+            mobileTab === "plan" ? "" : "hidden lg:block",
+          )}
+        >
           <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-3xl glass-card px-4 py-3 lg:py-2.5">
             <button
               onClick={() => setWeekOffset((w) => w - 1)}
@@ -330,7 +369,9 @@ export function Planner() {
                           {active ? (
                             <Plus className="ml-auto h-3.5 w-3.5 shrink-0 text-primary" />
                           ) : (
-                            count > 0 && <span className="ml-auto shrink-0 text-foreground">({count})</span>
+                            count > 0 && (
+                              <span className="ml-auto shrink-0 text-foreground">({count})</span>
+                            )
                           )}
                         </div>
                       );
@@ -380,7 +421,9 @@ export function Planner() {
                           className="flex items-center gap-2 rounded-2xl border border-border bg-surface-2/40 px-3 py-2 text-sm"
                         >
                           <span className="min-w-0 flex-1 truncate">{stripTags(item.text)}</span>
-                          <span className="shrink-0 text-[11px] text-muted-foreground">{estimate(item)} min</span>
+                          <span className="shrink-0 text-[11px] text-muted-foreground">
+                            {estimate(item)} min
+                          </span>
                           <button
                             onClick={() => removePlacement(item.id)}
                             aria-label="Vrátit do inboxu"
@@ -395,7 +438,6 @@ export function Planner() {
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
-
                         </li>
                       ))}
                       {items.length === 0 && (

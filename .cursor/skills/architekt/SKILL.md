@@ -21,6 +21,7 @@ Než začneš navrhovat, zjisti si skutečný stav kódu. Nehádej, jak co fungu
 ## Rozhodnutí, která jsou na tobě
 
 **Kam patří stav.** Tři možnosti a každá má jiné důsledky:
+
 - `src/lib/app-store.tsx` (klíč `fokus-state-v2`) — sdílený stav napříč obrazovkami: úkoly, série, inbox, plánovač
 - `src/lib/projects-storage.ts` (klíč `fokus-projects-v2`) — projekty, složky, témata, SM-2 stavy
 - lokální `useState` v komponentě — cokoli, co nemá přežít reload

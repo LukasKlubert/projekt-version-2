@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Brain, ChevronRight, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  PROJECTS_STORAGE_KEY,
-  normalizeProjects,
-  writeProjects,
-} from "@/lib/projects-storage";
+import { PROJECTS_STORAGE_KEY, normalizeProjects, writeProjects } from "@/lib/projects-storage";
 import { ActionFolder } from "./ActionFolder";
 import { AddFolderButton, EmptyFolderCard, FolderCard } from "./FolderCard";
 import { NewProjectDialog } from "./NewProjectDialog";
@@ -41,7 +37,10 @@ export function Projects() {
     if (hydrated) writeProjects(projects);
   }, [projects, hydrated]);
 
-  const project = useMemo(() => projects.find((p) => p.id === projectId) ?? null, [projects, projectId]);
+  const project = useMemo(
+    () => projects.find((p) => p.id === projectId) ?? null,
+    [projects, projectId],
+  );
   const openFolder = project ? findFolder(project.folders, path) : null;
 
   /** Popisky složek na cestě pro breadcrumb. */
@@ -55,7 +54,6 @@ export function Projects() {
 
   const update = (fn: (p: Project) => Project) =>
     setProjects((prev) => prev.map((p) => (p.id === project?.id ? fn(p) : p)));
-
 
   const openProject = (id: string) => {
     setProjectId(id);
@@ -113,7 +111,6 @@ export function Projects() {
             </div>
           </>
         )}
-
 
         <NewProjectDialog
           open={dialogOpen}
@@ -206,7 +203,9 @@ export function Projects() {
                     folders: p.folders.map((x) => (x.id === f.id ? { ...x, title } : x)),
                   }));
                 }}
-                onDelete={() => update((p) => ({ ...p, folders: p.folders.filter((x) => x.id !== f.id) }))}
+                onDelete={() =>
+                  update((p) => ({ ...p, folders: p.folders.filter((x) => x.id !== f.id) }))
+                }
               />
             ))}
           </div>
@@ -215,4 +214,3 @@ export function Projects() {
     </div>
   );
 }
-

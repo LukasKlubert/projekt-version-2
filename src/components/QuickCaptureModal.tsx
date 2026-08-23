@@ -148,7 +148,7 @@ export function QuickCaptureModal({ open, onClose }: { open: boolean; onClose: (
                       "rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
                       active
                         ? "border-primary/40 bg-primary/15 text-primary"
-                        : "border-border bg-surface-2/60 text-muted-foreground hover:border-primary/30 hover:text-foreground"
+                        : "border-border bg-surface-2/60 text-muted-foreground hover:border-primary/30 hover:text-foreground",
                     )}
                   >
                     {tag.label}
@@ -164,7 +164,7 @@ export function QuickCaptureModal({ open, onClose }: { open: boolean; onClose: (
             disabled={!hasContent}
             className={cn(
               "rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all",
-              hasContent ? "hover:bg-primary/90" : "cursor-not-allowed opacity-50"
+              hasContent ? "hover:bg-primary/90" : "cursor-not-allowed opacity-50",
             )}
           >
             Uložit do Inboxu

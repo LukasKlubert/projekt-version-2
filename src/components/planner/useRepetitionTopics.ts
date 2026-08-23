@@ -30,16 +30,16 @@ export function collectRepetitionTopics(
 ): RepetitionTopic[] {
   const out: RepetitionTopic[] = [];
   const maxDate = daysAhead > 0 ? addDays(today, daysAhead) : today;
-  
+
   for (const p of projects) {
     if (p.kind !== "study") continue;
     for (const f of p.folders ?? []) {
       for (const t of allTopics(f) as Topic[]) {
         const neu = isNewCard(t);
         const due = t.dueDate && t.dueDate <= maxDate;
-        
+
         if (!neu && !due) continue;
-        
+
         out.push({
           id: t.id,
           title: t.title,

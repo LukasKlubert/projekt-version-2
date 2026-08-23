@@ -65,7 +65,9 @@ export function StudyFolder({
                   folders: f.folders.map((x) => (x.id === sub.id ? { ...x, title } : x)),
                 }));
               }}
-              onDelete={() => patch((f) => ({ ...f, folders: f.folders.filter((x) => x.id !== sub.id) }))}
+              onDelete={() =>
+                patch((f) => ({ ...f, folders: f.folders.filter((x) => x.id !== sub.id) }))
+              }
             />
           ))}
         </div>
@@ -86,7 +88,9 @@ export function StudyFolder({
                   topics: f.topics.map((x) => (x.id === t.id ? { ...x, title } : x)),
                 }))
               }
-              onDelete={() => patch((f) => ({ ...f, topics: f.topics.filter((x) => x.id !== t.id) }))}
+              onDelete={() =>
+                patch((f) => ({ ...f, topics: f.topics.filter((x) => x.id !== t.id) }))
+              }
             />
           ))}
         </ul>

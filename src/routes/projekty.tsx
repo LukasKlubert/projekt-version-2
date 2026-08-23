@@ -59,13 +59,29 @@ function Projekty() {
         </div>
 
         <div className="relative">
-          <div className={cn(tab === "projekty" ? "animate-in fade-in slide-in-from-bottom-2 duration-300" : "hidden")}>
+          <div
+            className={cn(
+              tab === "projekty"
+                ? "animate-in fade-in slide-in-from-bottom-2 duration-300"
+                : "hidden",
+            )}
+          >
             <Projects />
           </div>
-          <div className={cn(tab === "vault" ? "animate-in fade-in slide-in-from-bottom-2 duration-300" : "hidden")}>
+          <div
+            className={cn(
+              tab === "vault" ? "animate-in fade-in slide-in-from-bottom-2 duration-300" : "hidden",
+            )}
+          >
             <Vault />
           </div>
-          <div className={cn(tab === "planovac" ? "animate-in fade-in slide-in-from-bottom-2 duration-300" : "hidden")}>
+          <div
+            className={cn(
+              tab === "planovac"
+                ? "animate-in fade-in slide-in-from-bottom-2 duration-300"
+                : "hidden",
+            )}
+          >
             <Planner />
           </div>
         </div>

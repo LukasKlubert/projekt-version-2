@@ -11,9 +11,17 @@ import type { Level, Topic } from "./types";
 import { getRepetitionStatus } from "@/lib/sm2";
 
 const states: { level: Exclude<Level, "none">; label: string; active: string }[] = [
-  { level: "hard", label: "Těžké", active: "border-transparent bg-destructive text-destructive-foreground" },
+  {
+    level: "hard",
+    label: "Těžké",
+    active: "border-transparent bg-destructive text-destructive-foreground",
+  },
   { level: "medium", label: "Střední", active: "border-transparent bg-warning text-background" },
-  { level: "easy", label: "Snadné", active: "border-transparent bg-success text-success-foreground" },
+  {
+    level: "easy",
+    label: "Snadné",
+    active: "border-transparent bg-success text-success-foreground",
+  },
 ];
 
 export function TopicRow({
@@ -86,9 +94,7 @@ export function TopicRow({
             key={s.level}
             className={cn(
               "rounded-full border px-2.5 py-1 text-[11px] font-medium",
-              topic.level === s.level
-                ? s.active
-                : "border-border text-muted-foreground opacity-40",
+              topic.level === s.level ? s.active : "border-border text-muted-foreground opacity-40",
             )}
           >
             {s.label}
@@ -111,7 +117,10 @@ export function TopicRow({
             >
               <Pencil className="h-4 w-4" /> Upravit
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={onDelete}>
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onSelect={onDelete}
+            >
               <Trash2 className="h-4 w-4" /> Smazat
             </DropdownMenuItem>
           </DropdownMenuContent>

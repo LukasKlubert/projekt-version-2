@@ -5,7 +5,6 @@ import { StreakHeader } from "@/components/dashboard/StreakHeader";
 import { TaskList } from "@/components/dashboard/TaskList";
 import { useAppStore } from "@/lib/app-store";
 
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -47,4 +46,3 @@ function Dashboard() {
     </AppShell>
   );
 }
-

@@ -67,7 +67,10 @@ export function FolderCard({
             >
               <Pencil className="h-4 w-4" /> Upravit
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={onDelete}>
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onSelect={onDelete}
+            >
               <Trash2 className="h-4 w-4" /> Smazat
             </DropdownMenuItem>
           </DropdownMenuContent>

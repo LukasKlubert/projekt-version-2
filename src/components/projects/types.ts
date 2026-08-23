@@ -96,14 +96,25 @@ export function findFolder(folders: Folder[], path: string[]): Folder | null {
 }
 
 /** Nahradí složku na dané cestě výsledkem fn. */
-export function updateFolderAt(folders: Folder[], path: string[], fn: (f: Folder) => Folder): Folder[] {
+export function updateFolderAt(
+  folders: Folder[],
+  path: string[],
+  fn: (f: Folder) => Folder,
+): Folder[] {
   const [head, ...rest] = path;
   return folders.map((f) =>
-    f.id !== head ? f : rest.length ? { ...f, folders: updateFolderAt(f.folders ?? [], rest, fn) } : fn(f),
+    f.id !== head
+      ? f
+      : rest.length
+        ? { ...f, folders: updateFolderAt(f.folders ?? [], rest, fn) }
+        : fn(f),
   );
 }
 
-export const levelMeta: Record<Level, { label: string; dot: string; chip: string; weight: number }> = {
+export const levelMeta: Record<
+  Level,
+  { label: string; dot: string; chip: string; weight: number }
+> = {
   none: {
     label: "Bez progresu",
     dot: "bg-muted-foreground/50",
@@ -134,7 +145,8 @@ const avg = (values: number[]) =>
   values.length ? Math.round(values.reduce((a, b) => a + b, 0) / values.length) : 0;
 
 /** Postup složky včetně zanořených podsložek („snadné“ = 100 %). */
-export const folderProgress = (f: Folder) => avg(allTopics(f).map((t) => levelMeta[t.level].weight));
+export const folderProgress = (f: Folder) =>
+  avg(allTopics(f).map((t) => levelMeta[t.level].weight));
 
 /** Postup Action projektu (% hotových úkolů). */
 export const actionProgress = (p: Project) => {
@@ -159,7 +171,7 @@ export function findTopicById(
 ): { topic: Topic; project: Project; folder: Folder; path: string[] } | null {
   for (const project of projects) {
     if (project.kind !== "study") continue;
-    
+
     const result = findTopicInFolders(project.folders, topicId, []);
     if (result) {
       return { ...result, project };
@@ -175,13 +187,13 @@ function findTopicInFolders(
 ): { topic: Topic; folder: Folder; path: string[] } | null {
   for (const folder of folders) {
     const currentPath = [...parentPath, folder.id];
-    
+
     // Hledej v topics této složky
     const topic = folder.topics.find((t) => t.id === topicId);
     if (topic) {
       return { topic, folder, path: currentPath };
     }
-    
+
     // Rekurzivně hledej v podsložkách
     const nested = findTopicInFolders(folder.folders ?? [], topicId, currentPath);
     if (nested) return nested;

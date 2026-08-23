@@ -32,7 +32,6 @@ export type WeekDay = { label: string; short: string; progress: number; isToday?
 
 const initialTasks: Task[] = [];
 
-
 export const weekDays = [
   { label: "Pondělí", short: "Po" },
   { label: "Úterý", short: "Út" },
@@ -99,7 +98,6 @@ const defaults: Persisted = {
   lastStreakDate: null,
 };
 
-
 /** Odhad času podle typu záznamu. */
 export function estimateMinutes(item: InboxItem): number {
   return item.type === "task" ? 25 : item.type === "idea" ? 15 : 10;
@@ -132,7 +130,6 @@ export function plannedTasksForToday(
 type Store = Persisted & {
   week: WeekDay[];
 
-
   unlocked: Record<Tier, boolean>;
   toggleTask: (id: string) => void;
   addFocusMinutes: (m: number) => void;
@@ -149,7 +146,6 @@ type Store = Persisted & {
   /** Vrátí inbox item podle ID (pro sourceTopicId). */
   getInboxItem: (id: string) => InboxItem | undefined;
 };
-
 
 const AppStoreContext = createContext<Store | null>(null);
 
@@ -176,7 +172,6 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     setHydrated(true);
   }, []);
 
-
   useEffect(() => {
     if (!hydrated) return;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -186,11 +181,13 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     setState((s) => {
       const placement = s.placements[id];
       if (placement)
-        return { ...s, placements: { ...s.placements, [id]: { ...placement, done: !placement.done } } };
+        return {
+          ...s,
+          placements: { ...s.placements, [id]: { ...placement, done: !placement.done } },
+        };
       return { ...s, tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)) };
     });
   }, []);
-
 
   const addFocusMinutes = useCallback((m: number) => {
     setState((s) => ({ ...s, focusMinutes: s.focusMinutes + m }));
@@ -254,9 +251,12 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     setTimerOpen(true);
   }, []);
 
-  const getInboxItem = useCallback((id: string) => {
-    return state.inbox.find((i) => i.id === id);
-  }, [state.inbox]);
+  const getInboxItem = useCallback(
+    (id: string) => {
+      return state.inbox.find((i) => i.id === id);
+    },
+    [state.inbox],
+  );
 
   const tasks = useMemo(
     () => [
@@ -285,7 +285,11 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     setState((s) => {
       if (complete && s.lastStreakDate !== today) {
         const yesterday = dateKey(new Date(Date.now() - 86_400_000));
-        return { ...s, streak: s.lastStreakDate === yesterday ? s.streak + 1 : 1, lastStreakDate: today };
+        return {
+          ...s,
+          streak: s.lastStreakDate === yesterday ? s.streak + 1 : 1,
+          lastStreakDate: today,
+        };
       }
       // Odškrtnutí úkolu zpět ještě týž den sérii zase odebere.
       if (!complete && s.lastStreakDate === today) {
@@ -324,7 +328,6 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;
 }
-
 
 export function useAppStore() {
   const ctx = useContext(AppStoreContext);

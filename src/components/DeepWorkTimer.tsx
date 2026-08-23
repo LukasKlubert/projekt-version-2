@@ -60,9 +60,7 @@ export function DeepWorkTimer() {
 
   return (
     <Dialog open={timerOpen} onOpenChange={setTimerOpen}>
-      <DialogContent
-        className="max-w-full border-none bg-background/95 p-0 sm:max-w-full h-[100dvh] w-screen rounded-none backdrop-blur-2xl"
-      >
+      <DialogContent className="max-w-full border-none bg-background/95 p-0 sm:max-w-full h-[100dvh] w-screen rounded-none backdrop-blur-2xl">
         <div className="flex h-full flex-col items-center justify-center gap-8 px-6 py-10">
           <div className="text-center">
             <p className="text-xs uppercase tracking-[0.3em] text-primary">Deep Work</p>
@@ -73,7 +71,13 @@ export function DeepWorkTimer() {
 
           <div className="relative grid place-items-center">
             <svg width="300" height="300" viewBox="0 0 300 300" className="-rotate-90">
-              <circle cx="150" cy="150" r={R} className="fill-none stroke-surface-2" strokeWidth="10" />
+              <circle
+                cx="150"
+                cy="150"
+                r={R}
+                className="fill-none stroke-surface-2"
+                strokeWidth="10"
+              />
               <circle
                 cx="150"
                 cy="150"

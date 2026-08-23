@@ -5,7 +5,12 @@ import { useAppStore, type Tier } from "@/lib/app-store";
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown, Clock, Pencil, Timer, Unlock } from "lucide-react";
 import { GradeModal } from "@/components/planner/GradeModal";
-import { applyGradeToTopic, findTopicById, updateFolderAt, type Level } from "@/components/projects/types";
+import {
+  applyGradeToTopic,
+  findTopicById,
+  updateFolderAt,
+  type Level,
+} from "@/components/projects/types";
 import { readProjects, writeProjects } from "@/lib/projects-storage";
 
 const tiers: { id: Tier; title: string; dot: string }[] = [
@@ -17,11 +22,15 @@ const tiers: { id: Tier; title: string; dot: string }[] = [
 export function TaskList() {
   const { tasks, toggleTask, unlocked, manualUnlock, startTimerFor, getInboxItem } = useAppStore();
   const [open, setOpen] = useState<Partial<Record<Tier, boolean>>>({});
-  const [grading, setGrading] = useState<{ taskId: string; topicId: string; topicTitle: string } | null>(null);
+  const [grading, setGrading] = useState<{
+    taskId: string;
+    topicId: string;
+    topicTitle: string;
+  } | null>(null);
 
   const handleToggleTask = (taskId: string) => {
     const inboxItem = getInboxItem(taskId);
-    
+
     // Pokud má sourceTopicId a označujeme jako done, zobraz modal
     if (inboxItem?.sourceTopicId) {
       const task = tasks.find((t) => t.id === taskId);
@@ -35,22 +44,22 @@ export function TaskList() {
         return; // Neprovádíme toggle teď, počkáme na hodnocení
       }
     }
-    
+
     // Normální toggle pro běžné úkoly nebo odškrtnutí
     toggleTask(taskId);
   };
 
   const handleGrade = (grade: Exclude<Level, "none">) => {
     if (!grading) return;
-    
+
     // Najdi téma v projektech
     const projects = readProjects();
     const result = findTopicById(projects, grading.topicId);
-    
+
     if (result) {
       // Aplikuj známku
       const updatedTopic = applyGradeToTopic(result.topic, grade);
-      
+
       // Aktualizuj projekt
       const updatedProject = {
         ...result.project,
@@ -59,17 +68,17 @@ export function TaskList() {
           topics: f.topics.map((t) => (t.id === updatedTopic.id ? updatedTopic : t)),
         })),
       };
-      
+
       // Ulož zpět
       const updatedProjects = projects.map((p) =>
-        p.id === updatedProject.id ? updatedProject : p
+        p.id === updatedProject.id ? updatedProject : p,
       );
       writeProjects(updatedProjects);
     }
-    
+
     // Označ úkol jako hotový
     toggleTask(grading.taskId);
-    
+
     // Zavři modal
     setGrading(null);
   };
@@ -109,7 +118,9 @@ export function TaskList() {
               <button
                 type="button"
                 disabled={!isUnlocked || isActive}
-                onClick={() => isUnlocked && !isActive && setOpen((o) => ({ ...o, [tier.id]: !expanded }))}
+                onClick={() =>
+                  isUnlocked && !isActive && setOpen((o) => ({ ...o, [tier.id]: !expanded }))
+                }
                 className={cn(
                   "flex min-w-0 items-center gap-2.5 text-left",
                   isUnlocked && !isActive && "cursor-pointer",

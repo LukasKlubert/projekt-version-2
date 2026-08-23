@@ -14,11 +14,11 @@ date: 2026-08-23
 
 ## 1. Současný tým
 
-| Role | Mechanismus | Soubor | Vyvolání | Model |
-|---|---|---|---|---|
-| Architekt | Custom Mode (skill) | `.cursor/skills/architekt/SKILL.md` | `Alt+Enter` → Architekt | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
-| Implementátor | subagent | `.cursor/agents/impl.md` | `/impl` v chatu | pinnuto `claude-4.5-sonnet-thinking` |
-| Reviewer | Custom Mode (skill) | `.cursor/skills/reviewer/SKILL.md` | `Alt+Enter` → Reviewer | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
+| Role          | Mechanismus         | Soubor                              | Vyvolání                | Model                                                 |
+| ------------- | ------------------- | ----------------------------------- | ----------------------- | ----------------------------------------------------- |
+| Architekt     | Custom Mode (skill) | `.cursor/skills/architekt/SKILL.md` | `Alt+Enter` → Architekt | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
+| Implementátor | subagent            | `.cursor/agents/impl.md`            | `/impl` v chatu         | pinnuto `claude-4.5-sonnet-thinking`                  |
+| Reviewer      | Custom Mode (skill) | `.cursor/skills/reviewer/SKILL.md`  | `Alt+Enter` → Reviewer  | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
 
 Plus dva workflow skills (`novy-ukol`, `pred-commitem`) a pět pravidel v `.cursor/rules/`.
 
@@ -48,13 +48,13 @@ Nerozbíjej je bez důvodu. Každé z nich vzniklo z konkrétní úvahy, která 
 
 Markdown s YAML frontmatterem, tělo je systémový prompt. Všechna pole jsou nepovinná.
 
-| Pole | Typ | Default | Význam |
-|---|---|---|---|
-| `name` | string | z názvu souboru | identifikátor, lowercase s pomlčkami |
-| `description` | string | — | podle tohohle se agent rozhoduje o delegaci |
-| `model` | string | `inherit` | `inherit` nebo konkrétní model ID |
-| `readonly` | boolean | `false` | zakáže editace souborů a stavově měnící shell příkazy |
-| `is_background` | boolean | `false` | běží na pozadí, neblokuje rodiče |
+| Pole            | Typ     | Default         | Význam                                                |
+| --------------- | ------- | --------------- | ----------------------------------------------------- |
+| `name`          | string  | z názvu souboru | identifikátor, lowercase s pomlčkami                  |
+| `description`   | string  | —               | podle tohohle se agent rozhoduje o delegaci           |
+| `model`         | string  | `inherit`       | `inherit` nebo konkrétní model ID                     |
+| `readonly`      | boolean | `false`         | zakáže editace souborů a stavově měnící shell příkazy |
+| `is_background` | boolean | `false`         | běží na pozadí, neblokuje rodiče                      |
 
 Umístění: `.cursor/agents/` (projekt), `~/.cursor/agents/` (uživatel). Kompatibilní i `.claude/agents/` a `.codex/agents/`. Projektoví mají přednost před uživatelskými, `.cursor/` vyhrává nad `.claude/` a `.codex/`.
 
@@ -68,15 +68,15 @@ Dostupné v editoru, CLI i cloud agentech.
 
 Složka s `SKILL.md`. Název složky **musí** odpovídat poli `name`.
 
-| Pole | Povinné | Význam |
-|---|---|---|
-| `name` | ano | lowercase, čísla, pomlčky; shoduje se s názvem složky |
-| `description` | ano | podle toho agent určuje relevanci |
-| `paths` | ne | globy, na které se skill scopuje (čárkami oddělený string nebo YAML seznam) |
-| `disable-model-invocation` | ne | `true` = jen explicitní `/skill-name`, agent si ho sám nevezme |
-| `icon` | ne | ikona badge v Custom Mode: `code`, `terminal`, `bug`, `git-branch`, `book-open`, `beaker`, `shield`, `rocket` |
-| `color` | ne | právě jedna z: `default`, `green`, `cyan`, `blue`, `purple`, `magenta`, `orange`, `yellow`, `red`, `brand` |
-| `metadata` | ne | libovolné key-value |
+| Pole                       | Povinné | Význam                                                                                                        |
+| -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------- |
+| `name`                     | ano     | lowercase, čísla, pomlčky; shoduje se s názvem složky                                                         |
+| `description`              | ano     | podle toho agent určuje relevanci                                                                             |
+| `paths`                    | ne      | globy, na které se skill scopuje (čárkami oddělený string nebo YAML seznam)                                   |
+| `disable-model-invocation` | ne      | `true` = jen explicitní `/skill-name`, agent si ho sám nevezme                                                |
+| `icon`                     | ne      | ikona badge v Custom Mode: `code`, `terminal`, `bug`, `git-branch`, `book-open`, `beaker`, `shield`, `rocket` |
+| `color`                    | ne      | právě jedna z: `default`, `green`, `cyan`, `blue`, `purple`, `magenta`, `orange`, `yellow`, `red`, `brand`    |
+| `metadata`                 | ne      | libovolné key-value                                                                                           |
 
 Tři způsoby aktivace: automaticky podle `description`; ručně přes `/` v chatu (připojí se k jedné zprávě); jako **Custom Mode** přes `Alt+Enter` (Windows) / `Option+Enter` (Mac) — pak skill zůstává v kontextu po celou session.
 
@@ -88,12 +88,12 @@ Legacy pole `globs` se stále akceptuje jako fallback za `paths`, ale nové skil
 
 **Přípona musí být `.mdc`.** Obyčejný `.md` v téhle složce se ignoruje.
 
-| `alwaysApply` | `description` | `globs` | Chování |
-|---|---|---|---|
-| `true` | — | — | vždy v kontextu, ostatní pole se ignorují |
-| `false` | — | zadáno | auto-attach, když je v kontextu odpovídající soubor |
-| `false` | zadáno | — | agent si pravidlo vytáhne, když ho vyhodnotí jako relevantní |
-| `false` | — | — | jen při `@`-mention |
+| `alwaysApply` | `description` | `globs` | Chování                                                      |
+| ------------- | ------------- | ------- | ------------------------------------------------------------ |
+| `true`        | —             | —       | vždy v kontextu, ostatní pole se ignorují                    |
+| `false`       | —             | zadáno  | auto-attach, když je v kontextu odpovídající soubor          |
+| `false`       | zadáno        | —       | agent si pravidlo vytáhne, když ho vyhodnotí jako relevantní |
+| `false`       | —             | —       | jen při `@`-mention                                          |
 
 `globs` se oddělují čárkami. Doporučená velikost pod 500 řádků. Precedence: Team → Project → User.
 
@@ -148,13 +148,13 @@ Popis silných stránek jednotlivých modelů je v `agent-specializace.md`.
 
 ## 5. Kdy co použít
 
-| Potřeba | Mechanismus |
-|---|---|
-| Role potřebuje izolovaný kontext, pinnutý model, případně běh na pozadí | **subagent** v `.cursor/agents/` |
-| Role potřebuje dlouhý vlastní chat, kde se rozhodnutí vrství | **Custom Mode** (skill s `disable-model-invocation: true`) |
-| Opakovatelný postup na pár kroků, žádná role | **skill** bez `disable-model-invocation` |
-| Konvence, kterou má znát každý, kdo sáhne na daný soubor | **pravidlo** v `.cursor/rules/` |
-| Vynucení, které nesmí jít obejít promptem | **hook** |
+| Potřeba                                                                 | Mechanismus                                                |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Role potřebuje izolovaný kontext, pinnutý model, případně běh na pozadí | **subagent** v `.cursor/agents/`                           |
+| Role potřebuje dlouhý vlastní chat, kde se rozhodnutí vrství            | **Custom Mode** (skill s `disable-model-invocation: true`) |
+| Opakovatelný postup na pár kroků, žádná role                            | **skill** bez `disable-model-invocation`                   |
+| Konvence, kterou má znát každý, kdo sáhne na daný soubor                | **pravidlo** v `.cursor/rules/`                            |
+| Vynucení, které nesmí jít obejít promptem                               | **hook**                                                   |
 
 Dokumentace k tomu dodává: pokud zakládáš subagenta na jednoúčelovou věc typu „vygeneruj changelog", má to být skill. A pravidlo přidávej teprve, když si všimneš, že agent opakovaně dělá tutéž chybu.
 
@@ -172,14 +172,17 @@ model: claude-4.5-sonnet-thinking
 Jsi <role> projektu Fokus — studijní „deep work" aplikace na TanStack Start, React 19 a Tailwindu v4.
 
 ## Co děláš
+
 <jedna jasná odpovědnost, žádní obecní pomocníci>
 
 ## Postup
+
 <konkrétní kroky>
 
 ## Čeho se držet
+
 <omezení specifická pro tuhle roli; obecné konvence projektu neopakuj,
- ty se doplní automaticky z .cursor/rules/>
+ty se doplní automaticky z .cursor/rules/>
 
 Než ohlásíš hotovo, spusť `npm run lint` a `npm test`.
 ```

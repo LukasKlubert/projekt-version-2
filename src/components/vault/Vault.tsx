@@ -52,7 +52,7 @@ export function Vault() {
         <Upload className="h-4 w-4 shrink-0 text-primary" />
         <span className="text-sm font-medium">Nahraj studijní materiály</span>
         <span className="hidden text-xs text-muted-foreground sm:inline">
-            PDF, obrázky nebo text — max 25 MB
+          PDF, obrázky nebo text — max 25 MB
         </span>
         <input
           type="file"
@@ -110,7 +110,11 @@ export function Vault() {
             </div>
 
             <div className="flex shrink-0 items-center gap-1">
-              <Button variant="outline" size="sm" className="hidden rounded-full text-xs sm:inline-flex">
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden rounded-full text-xs sm:inline-flex"
+              >
                 Vygenerovat kartičky
               </Button>
 
@@ -121,10 +125,16 @@ export function Vault() {
                   aria-label={d.public ? "Veřejné" : "Soukromé"}
                   className="grid h-8 w-8 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
                 >
-                  {d.public ? <Globe className="h-4 w-4 text-success" /> : <Lock className="h-4 w-4" />}
+                  {d.public ? (
+                    <Globe className="h-4 w-4 text-success" />
+                  ) : (
+                    <Lock className="h-4 w-4" />
+                  )}
                 </button>
                 <span className="pointer-events-none absolute right-0 top-full z-20 mt-1 whitespace-nowrap rounded-lg bg-surface-2 px-2 py-1 text-[11px] text-foreground opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
-                  {d.public ? "Veřejné — viditelné pro ostatní v Hubu" : "Soukromé — vidíš pouze ty"}
+                  {d.public
+                    ? "Veřejné — viditelné pro ostatní v Hubu"
+                    : "Soukromé — vidíš pouze ty"}
                 </span>
               </div>
 

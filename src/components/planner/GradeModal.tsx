@@ -3,9 +3,17 @@ import { cn } from "@/lib/utils";
 import type { Level } from "@/components/projects/types";
 
 const grades: { level: Exclude<Level, "none">; label: string; color: string }[] = [
-  { level: "hard", label: "Těžké", color: "bg-destructive text-destructive-foreground hover:bg-destructive/90" },
+  {
+    level: "hard",
+    label: "Těžké",
+    color: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+  },
   { level: "medium", label: "Střední", color: "bg-warning text-background hover:bg-warning/90" },
-  { level: "easy", label: "Snadné", color: "bg-success text-success-foreground hover:bg-success/90" },
+  {
+    level: "easy",
+    label: "Snadné",
+    color: "bg-success text-success-foreground hover:bg-success/90",
+  },
 ];
 
 export function GradeModal({
@@ -46,10 +54,7 @@ export function GradeModal({
             <button
               key={g.level}
               onClick={() => onGrade(g.level)}
-              className={cn(
-                "rounded-2xl px-4 py-3 font-medium transition-colors",
-                g.color,
-              )}
+              className={cn("rounded-2xl px-4 py-3 font-medium transition-colors", g.color)}
             >
               {g.label}
             </button>

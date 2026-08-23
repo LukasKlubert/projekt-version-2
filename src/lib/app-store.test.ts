@@ -11,11 +11,7 @@ const task = (id: string, tier: Task["tier"], done: boolean): Task => ({
 
 describe("mustProgress", () => {
   it("počítá jen Must Do úkoly", () => {
-    const tasks = [
-      task("a", "must", true),
-      task("b", "must", false),
-      task("c", "should", true),
-    ];
+    const tasks = [task("a", "must", true), task("b", "must", false), task("c", "should", true)];
     expect(mustProgress(tasks)).toBe(0.5);
   });
 

@@ -10,7 +10,8 @@ export const Route = createFileRoute("/profil")({
       { title: "Profil — Statistiky a AI mentor | Fokus" },
       {
         name: "description",
-        content: "Tvoje série, odpracované hodiny hluboké práce, návyky a doporučení od AI mentora.",
+        content:
+          "Tvoje série, odpracované hodiny hluboké práce, návyky a doporučení od AI mentora.",
       },
       { property: "og:title", content: "Profil — Statistiky a AI mentor | Fokus" },
       { property: "og:description", content: "Série, statistiky fokusu a rady AI mentora." },
@@ -45,8 +46,17 @@ function Profil() {
 
         <section className="grid grid-cols-2 gap-3 md:grid-cols-3">
           <StatCard icon={Flame} value={`${streak} dní`} label="Aktuální série" />
-          <StatCard icon={Clock} value={`${Math.round(focusMinutes / 60)} h`} label="Hluboká práce" />
-          <StatCard icon={CheckCircle2} value={`${done}`} label="Úkoly dnes" className="col-span-2 md:col-span-1" />
+          <StatCard
+            icon={Clock}
+            value={`${Math.round(focusMinutes / 60)} h`}
+            label="Hluboká práce"
+          />
+          <StatCard
+            icon={CheckCircle2}
+            value={`${done}`}
+            label="Úkoly dnes"
+            className="col-span-2 md:col-span-1"
+          />
         </section>
 
         <section className="rounded-3xl glass-card p-5">

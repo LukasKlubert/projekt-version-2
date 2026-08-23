@@ -128,7 +128,7 @@ export function getRepetitionStatus(
   }
 
   const daysUntilDue = daysBetween(today, state.dueDate);
-  
+
   if (daysUntilDue < 0) {
     // Po termínu
     const overdue = Math.abs(daysUntilDue);
@@ -138,7 +138,7 @@ export function getRepetitionStatus(
       isDueToday: true,
     };
   }
-  
+
   if (daysUntilDue === 0) {
     return {
       badge: "🔄 Dnes",
@@ -146,7 +146,7 @@ export function getRepetitionStatus(
       isDueToday: true,
     };
   }
-  
+
   if (daysUntilDue === 1) {
     return {
       badge: "🔄 Zítra",
@@ -154,7 +154,7 @@ export function getRepetitionStatus(
       isDueToday: false,
     };
   }
-  
+
   return {
     badge: `🔄 Za ${daysUntilDue} dní`,
     detail: `Opakování: za ${daysUntilDue} dní`,
