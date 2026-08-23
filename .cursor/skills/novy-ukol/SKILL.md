@@ -17,7 +17,7 @@ Pokud zadání neexistuje nebo je jednovětné, zeptej se na chybějící část
 
 ## 2. Návrh
 
-Otevři Custom Mode **Architekt** (`Alt+Enter`) a nech si vrátit plán: datový model, kroky s konkrétními soubory, testy, rizika.
+Přepni se do režimu **Architekt** (napiš `/architekt`, nechej položku v roletce zvýrazněnou a stiskni `Alt+Enter`) a nech si vrátit plán: datový model, kroky s konkrétními soubory, testy, rizika.
 
 U triviální změny (přejmenování textu, úprava odsazení) tenhle krok přeskoč — návrh by trval déle než oprava.
 
@@ -33,7 +33,7 @@ Pokud je featura velká, rozděl ji na dvě až tři volání podle kroků z pl�
 
 Spusť `npm run lint` a `npm test`.
 
-Otevři Custom Mode **Reviewer** (`Alt+Enter`) a nech si zkontrolovat diff. Blokující nálezy oprav přes `/impl`, pak nech zkontrolovat znovu.
+Přepni se do režimu **Reviewer** (`/reviewer` a na zvýrazněné položce `Alt+Enter`) a nech si zkontrolovat diff. Blokující nálezy oprav přes `/impl`, pak nech zkontrolovat znovu.
 
 Ručně otevři dotčenou obrazovku v `npm run dev` a zkus i chování, které testy nepokrývají: reload stránky (přežila data?), úzké okno, prázdný stav.
 

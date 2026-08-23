@@ -78,7 +78,17 @@ Složka s `SKILL.md`. Název složky **musí** odpovídat poli `name`.
 | `color`                    | ne      | právě jedna z: `default`, `green`, `cyan`, `blue`, `purple`, `magenta`, `orange`, `yellow`, `red`, `brand`    |
 | `metadata`                 | ne      | libovolné key-value                                                                                           |
 
-Tři způsoby aktivace: automaticky podle `description`; ručně přes `/` v chatu (připojí se k jedné zprávě); jako **Custom Mode** přes `Alt+Enter` (Windows) / `Option+Enter` (Mac) — pak skill zůstává v kontextu po celou session.
+Tři způsoby aktivace:
+
+1. automaticky podle `description` (pokud není `disable-model-invocation: true`)
+2. ručně přes `/` v chatu a **Enter** — skill se připojí k jedné zprávě
+3. jako **Custom Mode** — napsat `/`, vybrat skill v roletce a na zvýrazněné položce stisknout **`Alt+Enter`** (Windows) / `Option+Enter` (Mac), případně zvolit **„Use as Mode"**. Skill pak zůstává v kontextu po celou session, aktivní režim se pozná podle badge v chat inputu.
+
+**Past, na kterou jsme narazili:** `Alt+Enter` na prázdném promptu nedělá nic. Musí se mačkat až na zvýrazněné položce v roletce po `/`. Dokumentace navíc uvádí Custom Modes jako dostupné v **Agents Window** a v **CLI** — běžný side-panel chat v tom výčtu není. Agents Window: `Ctrl+Shift+P` → „Open Agents Window".
+
+Načtené skilly se dají zkontrolovat v sidebaru pod **Customize → Skills**. Objevování je vázané na start Cursoru, takže po přidání souboru může být potřeba reload okna.
+
+Neplatná hodnota `icon` nebo `color` skill neskryje — badge jen spadne na výchozí ikonu blesku.
 
 Volitelné podsložky: `scripts/`, `references/`, `assets/`. Doporučení je držet `SKILL.md` krátký a detaily odsunout do `references/`, protože se načítají progresivně.
 
@@ -259,3 +269,14 @@ src/routeTree.gen.ts         generovaný, needitovat
 - **Skill na migraci schématu localStorage.** Odloženo, dokud první migrace reálně nenastane. Až přijde, patří sem postup: zvýšit verzi klíče, napsat migrační funkci, otestovat ji na starých datech, ošetřit poškozený JSON.
 - **Hooks na automatický lint a test po editaci.** Uživatel je zatím nechtěl. Šlo by přes `afterFileEdit`.
 - **Izolované worktree pro subagenty.** Cursor umí dát subagentovi vlastní git worktree. Zajímavé, až by běželo víc implementátorů paralelně; při jednom je to zbytečná režie.
+
+## 10. Záložní plán, kdyby Custom Mode nešel použít
+
+Pokud by se Architekt a Reviewer nedali v daném prostředí spustit jako režim, dají se překlopit na subagenty do `.cursor/agents/architekt.md` a `.cursor/agents/reviewer.md`. Získá se tím dvojí:
+
+- **`model` se dá vynutit** (`claude-opus-5-thinking-high`), takže se nemusí vybírat ručně
+- **`readonly: true`** technicky zabrání editaci souborů, místo aby to byla jen instrukce v promptu
+
+Cena za to je ztráta kontinuity: subagent startuje s čistým kontextem a nevidí předchozí konverzaci. Architekt by tedy nedržel nit mezi featurami a Reviewer by nepoznal vracející se chybu — což byl původní důvod, proč jsou to Custom Modes. Subagenta lze obnovit přes jeho agent ID, ale to je manuální krok, ne plynulý chat.
+
+Rozhodovat se tedy podle toho, co víc chybí: vynucený model, nebo návaznost.

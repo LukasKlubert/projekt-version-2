@@ -10,6 +10,25 @@ Máš tři agenty. Každý umí něco jiného a voláš je jinak.
 
 ---
 
+## Jak se zapíná Custom Mode
+
+Architekt a Reviewer běží jako Custom Mode — režim, ve kterém agent zůstane v roli po celý chat. Zapíná se takhle:
+
+1. Napiš do chatu `/` a název role, třeba `/architekt`
+2. V roletce nechej položku **zvýrazněnou** — Enter nemačkej
+3. Stiskni **`Alt+Enter`**, nebo v položce vyber **„Use as Mode"**
+
+Poznáš to podle **badge v chat inputu**. Enter místo Alt+Enter by roli připojil jen k jedné zprávě, ne k celému chatu.
+
+`Alt+Enter` na prázdném promptu nedělá nic — musí se mačkat až na zvýrazněné položce v roletce.
+
+**Když to nefunguje:**
+
+- Custom Modes jsou dokumentované jako dostupné v **Agents Window** a v CLI. Agents Window otevřeš přes `Ctrl+Shift+P` → „Open Agents Window", zpátky do editoru přes „Open IDE".
+- Pokud se role neobjeví ani v roletce po `/`, podívej se v sidebaru do **Customize → Skills**, jestli ji Cursor načetl. Skilly se objevují při startu Cursoru, takže po přidání nového souboru může být potřeba reload okna.
+
+---
+
 ## Kdo je kdo
 
 ### Architekt — vlastní chat
@@ -18,10 +37,9 @@ Máš tři agenty. Každý umí něco jiného a voláš je jinak.
 
 **Jak:**
 
-1. Stiskni `Alt+Enter`
-2. Vyber **Architekt**
-3. V pickeru modelů nahoře vyber `claude-opus-5-thinking-high`
-4. Napiš, co chceš
+1. `/architekt` → `Alt+Enter` na zvýrazněné položce
+2. V pickeru modelů vyber `claude-opus-5-thinking-high`
+3. Napiš, co chceš
 
 **Co dostaneš:** Plán — co se mění, jaká data, kroky s konkrétními soubory, testy, rizika. **Žádný kód.**
 
@@ -51,10 +69,9 @@ Umí UI i logiku, sám pozná, o co jde. Model má napevno nastavený, nemusíš
 
 **Jak:**
 
-1. `Alt+Enter`
-2. Vyber **Reviewer**
-3. Vyber model `claude-opus-5-thinking-high`
-4. Napiš „zkontroluj změny"
+1. `/reviewer` → `Alt+Enter` na zvýrazněné položce
+2. Vyber model `claude-opus-5-thinking-high`
+3. Napiš „zkontroluj změny"
 
 **Co dostaneš:** Nálezy roztříděné na blokující, doporučené a drobnosti. **Nic neopraví** — opravu zadáš Implementátorovi přes `/impl`.
 
@@ -74,7 +91,7 @@ Napiš v chatu `/` a vyber:
 ## Typický průběh featury
 
 ```
-1. Alt+Enter → Architekt
+1. /architekt + Alt+Enter (režim)
    "Chci přidat export projektů do souboru"
    → dostaneš plán
 
@@ -84,7 +101,7 @@ Napiš v chatu `/` a vyber:
    /impl Udělej export podle plánu od architekta
    → napíše kód
 
-4. Alt+Enter → Reviewer
+4. /reviewer + Alt+Enter (režim)
    "Zkontroluj export"
    → nálezy
 
