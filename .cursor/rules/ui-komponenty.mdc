@@ -1,0 +1,64 @@
+---
+description: Konvence pro React komponenty ve Fokus - design tokeny, Tailwind v4, shadcn, přístupnost.
+globs: src/components/**/*.tsx,src/routes/**/*.tsx
+alwaysApply: false
+---
+
+# UI komponenty ve Fokus
+
+## Struktura
+
+- **Named exporty**, žádný `export default`. Jeden soubor může exportovat víc komponent, pokud spolu úzce souvisí (`DayRing` a `StreakHeader` v jednom souboru).
+- Funkční komponenty, typ props inline v signatuře u malých komponent, samostatný `type` u velkých.
+- Třídy vždy přes `cn()` z `@/lib/utils`, jakmile je v nich jakákoli podmínka.
+- Ikony z `lucide-react`, velikost přes `size-*` třídy.
+
+## Design tokeny místo natvrdo psaných barev
+
+Barvy jsou definované v `src/styles.css` jako CSS proměnné (`--background`, `--foreground`, `--muted-foreground`, `--border`, `--primary`, `--success`, `--warning`, `--destructive`, `--surface`, `--focus`). Používejte jejich Tailwind podobu:
+
+```tsx
+// správně
+className="text-muted-foreground bg-surface border-border"
+className="stroke-success"
+
+// špatně - natvrdo psaná paleta obchází barevné schéma
+className="text-gray-400 bg-slate-800"
+className="stroke-emerald-500"
+```
+
+Ve stávajícím kódu existují výjimky (`StreakHeader.tsx` používá `stroke-emerald-500` a `stroke-gray-800`). Jsou to pozůstatky, ne vzor — nový kód je nekopíruje.
+
+## Vlastní utility třídy
+
+Tailwind v4 utility definované v `styles.css`: `glass-card` (poloprůhledná karta s blurem, používá se na hlavní panely), `flame-glow` (animace plamínku u série), `pulse-glow`.
+
+Font: `font-display` pro nadpisy a číselné údaje (Space Grotesk), výchozí sans pro text.
+
+## Responzivita
+
+Projekt je mobile-first a cílí i na velmi úzké displeje. Kromě standardních breakpointů se používá vlastní `min-[360px]:`. Škálujte postupně:
+
+```tsx
+className="px-2.5 py-3 min-[360px]:px-3 sm:px-5 md:px-6"
+```
+
+U textu, který musí plynule růst, se používá `text-[clamp(7px,1.5vw,12px)]`.
+
+Na flex a grid položkách, které mohou přetéct, nezapomínejte na `min-w-0` a `truncate`.
+
+## shadcn/ui
+
+Hotové komponenty jsou v `src/components/ui/` a importují se přes alias `@/components/ui/...`. **Needitujte je** — pokud potřebujete jinou variantu, obalte je vlastní komponentou ve feature složce.
+
+Většina obrazovek je psaná ručně v Tailwindu; shadcn se používá hlavně pro `Button`, `Dialog`, `Checkbox` a `DropdownMenu`.
+
+## Přístupnost
+
+- Tlačítko jen s ikonou musí mít `aria-label` i `title`.
+- Vždy `type="button"`, pokud tlačítko neodesílá formulář.
+- Interaktivní prvky potřebují viditelný hover a active stav (`hover:bg-foreground/5`, `active:scale-95`).
+
+## Stav
+
+Komponenty čtou sdílený stav přes `useAppStore()` z `@/lib/app-store`. Výpočty nad daty nepatří do JSX — vytáhněte je do pure funkce v `src/lib/`, kde se dají otestovat.

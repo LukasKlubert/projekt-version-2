@@ -1,0 +1,54 @@
+---
+description: Jak psát testy ve Fokus - Vitest v node prostředí, žádný jsdom, komponenty přes renderToStaticMarkup.
+globs: src/**/*.test.ts,src/**/*.test.tsx,vitest.config.ts
+alwaysApply: false
+---
+
+# Testování ve Fokus
+
+Spuštění: `npm test` (`vitest run`). Testy se hledají podle `src/**/*.test.{ts,tsx}`.
+
+## Prostředí je node, ne jsdom
+
+`vitest.config.ts` má `environment: "node"`. Z toho plyne:
+
+- **Není k dispozici DOM.** Nepoužívejte `@testing-library/react`, `render()`, `screen`, `fireEvent` ani `document`. Tyhle knihovny nejsou nainstalované a instalovat je nechceme.
+- **Nelze testovat interakce** (klikání, psaní). Testujte logiku, ne chování prohlížeče.
+- **Není `localStorage`.** Persistenci netestujte přímo; testujte pure funkce, které data transformují.
+
+## Logika
+
+Preferovaný typ testu. Pure funkce se importují a volají přímo:
+
+```ts
+import { describe, expect, it } from "vitest";
+import { applyReview, defaultSm2State } from "@/lib/sm2";
+
+describe("applyReview", () => {
+  it("po známce hard resetuje reps a nastaví interval na 1", () => {
+    const next = applyReview(defaultSm2State(), "hard", "2026-01-15");
+    expect(next.reps).toBe(0);
+    expect(next.interval).toBe(1);
+  });
+});
+```
+
+Datum vždy předávejte explicitně jako poslední argument. Test, který spoléhá na `new Date()`, začne jednou padat.
+
+## Komponenty
+
+Testují se jako vizuální regrese přes serverový render do řetězce, jak to dělá `src/components/dashboard/StreakHeader.test.tsx`:
+
+```tsx
+import { renderToStaticMarkup } from "react-dom/server";
+
+expect(renderToStaticMarkup(<DayRing short="Po" progress={0.5} isToday={false} />)).toMatchSnapshot();
+```
+
+Snapshoty leží v `__snapshots__/` vedle testu. Když se snapshot změní, **podívejte se do diffu a ověřte, že je změna zamýšlená**, teprve pak ho aktualizujte přes `npx vitest run -u`.
+
+Komponentu závislou na `useAppStore()` takhle vyrenderovat nelze, protože není obalená providerem. Buď testujte její prezentační podčást s props (jako `DayRing`), nebo vytáhněte logiku do pure funkce a otestujte tu.
+
+## Co pokrýt testem
+
+Každá nová pure funkce v `src/lib/` a každá změna SM-2 nebo streak logiky. U výpočtů nezapomeňte na hraniční případy: prázdné pole, nula úkolů, přechod přes půlnoc, minimální ease `1.3`.

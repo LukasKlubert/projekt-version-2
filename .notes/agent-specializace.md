@@ -124,3 +124,18 @@ Promyslet různé situace, kdy se role použije
 Vytvořit jasné, ale flexibilní guidelines
 
 ---
+
+## Tým projektu Fokus
+
+Tabulky výše jsou **referenční přehled modelů**, ne návrh týmu. Skutečný tým je postavený opačně: role se definují podle práce, která se na projektu reálně dělá, a model se přiřadí až jako parametr.
+
+| Role | Vyvolání | Model |
+|---|---|---|
+| Architekt | `Alt+Enter` → Architekt | `claude-opus-5-thinking-high` (vybrat ručně) |
+| Implementátor | `/impl` | `claude-4.5-sonnet-thinking` (napevno) |
+| Reviewer | `Alt+Enter` → Reviewer | `claude-opus-5-thinking-high` (vybrat ručně) |
+
+- **Jak tým používat:** [jak-pouzivat-tym.md](jak-pouzivat-tym.md)
+- **Jak tým rozšiřovat o další specialisty:** [cto-playbook.md](cto-playbook.md)
+
+Poznámka k modelům: model jde napevno nastavit jen u subagenta (pole `model` v `.cursor/agents/*.md`). Custom Mode takové pole nemá, takže se u Architekta a Reviewera vybírá ručně v pickeru chatu.

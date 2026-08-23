@@ -1,0 +1,57 @@
+---
+description: Práce se stavem a localStorage ve Fokus - dva oddělené storage klíče, SSR-safe hydratace, verzování schématu.
+globs: src/lib/**/*.ts,src/lib/**/*.tsx,src/components/projects/**/*.tsx,src/components/planner/**/*.ts
+alwaysApply: false
+---
+
+# Stav a persistence ve Fokus
+
+## Dva oddělené úložné klíče
+
+| Klíč | Soubor | Obsah |
+|---|---|---|
+| `fokus-state-v2` | `src/lib/app-store.tsx` | úkoly, minuty, série, historie týdne, inbox, placements |
+| `fokus-projects-v2` | `src/lib/projects-storage.ts` | projekty, složky, témata včetně SM-2 stavu |
+
+Nemíchejte je. Data projektů nikdy neukládejte do app-store a naopak.
+
+Projekty se čtou a zapisují přes `readProjects()` / `writeProjects()`. `writeProjects()` po zápisu vyšle událost `fokus-projects-changed` (konstanta `PROJECTS_CHANGED_EVENT`), na kterou naslouchají ostatní komponenty. Pokud zapíšete do localStorage přímo, událost se nevyšle a UI se nepřekreslí.
+
+## Verzování schématu
+
+Přípona `-v2` v klíči je verze schématu. Pokud uděláte změnu, která rozbije čtení starých dat (přejmenování nebo odebrání pole, změna typu):
+
+1. Zvyšte verzi v klíči (`fokus-state-v3`).
+2. Napište migraci ze staré verze, nebo vědomě rozhodněte, že se stará data zahodí — a řekněte to uživateli.
+
+Přidání nového volitelného pole s rozumným defaultem verzi zvyšovat nemusí, protože načítání slučuje uložený stav s `defaults`.
+
+## SSR-safe hydratace
+
+Aplikace se renderuje na serveru, kde `localStorage` neexistuje. Nikdy z něj nečtěte během renderu ani v inicializátoru `useState`.
+
+Správný postup je v `app-store.tsx`: první render použije `defaults`, uložený stav se načte v `useEffect` po mountu a teprve pak se nastaví příznak `hydrated`. Zápis zpět je podmíněný `if (!hydrated) return;`, aby se defaults nepřepsaly přes reálná data.
+
+```tsx
+useEffect(() => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) setState({ ...defaults, ...(JSON.parse(raw) as Partial<Persisted>) });
+  } catch {
+    /* poškozený stav ignorujeme */
+  }
+  setHydrated(true);
+}, []);
+```
+
+Čtení vždy obalte `try/catch` — poškozený JSON nesmí shodit aplikaci.
+
+## Pure funkce mimo komponentu
+
+Výpočty nad stavem patří jako exportované pure funkce na úroveň modulu, ne dovnitř komponenty. Díky tomu se dají testovat bez renderu. Vzory: `mustProgress`, `buildWeek`, `todayIndex`, `plannedTasksForToday` v `app-store.tsx`, celý `sm2.ts`.
+
+## Datum a čas
+
+Používejte `dateKey()` / `toDateKey()`, které vracejí **lokální** `YYYY-MM-DD`. Nepoužívejte `toISOString().slice(0, 10)` — ten dává UTC a večer posune den.
+
+Funkce závislé na čase přijímají dnešek jako parametr s defaultem (`today: string = toDateKey()`), aby šly deterministicky testovat.

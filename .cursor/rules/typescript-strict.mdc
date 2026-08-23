@@ -1,0 +1,62 @@
+---
+description: Vzory pro strict TypeScript flagy zapnuté v tomto projektu (noUncheckedIndexedAccess, exactOptionalPropertyTypes).
+globs: src/**/*.ts,src/**/*.tsx
+alwaysApply: false
+---
+
+# Strict TypeScript v Fokus
+
+`tsconfig.json` má nad běžný `strict` zapnuté ještě `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noPropertyAccessFromIndexSignature`, `noImplicitReturns` a `noImplicitOverride`. Kód, který by v jiném projektu prošel, tady spadne. Používejte níže uvedené vzory, jsou převzaté z existujícího kódu.
+
+## noUncheckedIndexedAccess
+
+Indexace pole nebo záznamu vrací `T | undefined`. Řešte to jedním ze tří způsobů:
+
+```ts
+// 1) Non-null assertion tam, kde je index prokazatelně platný
+const short = weekDays[todayIndex()]!.short;
+
+// 2) Nullish coalescing s rozumným defaultem
+progress: history[i] ?? 0
+
+// 3) Guard, pokud undefined je legitimní stav
+const placement = s.placements[id];
+if (placement) { /* ... */ }
+```
+
+U destrukturace z `split()` a `map(Number)` je potřeba assertion na každé položce:
+
+```ts
+const [y, m, d] = dateKey.split("-").map(Number);
+const dt = new Date(y!, m! - 1, d!);
+```
+
+## exactOptionalPropertyTypes
+
+Optional property nesmí dostat explicitní `undefined`. Nepište `{ sourceTopicId: undefined }`. Použijte podmíněný spread:
+
+```ts
+const item: InboxItem = {
+  id: crypto.randomUUID(),
+  text: normalized,
+  type,
+  createdAt: new Date().toISOString(),
+  ...(options?.sourceTopicId ? { sourceTopicId: options.sourceTopicId } : {}),
+};
+```
+
+## noPropertyAccessFromIndexSignature
+
+K hodnotám v typu s index signature se dostávejte přes hranaté závorky (`obj["klic"]`), ne přes tečku.
+
+## Typy funkcí
+
+Návratový typ u exportovaných funkcí pište explicitně. Pomáhá to při refaktoringu a `noImplicitReturns` pak hlásí chyby na správném místě.
+
+```ts
+export function mustProgress(tasks: Task[]): number { /* ... */ }
+```
+
+## Ověření
+
+Typy nekontroluje `npm run lint` (ESLint tu neběží s type-aware pravidly). Typová chyba se projeví až při `npm run build` nebo v editoru. Po větší změně typů proto zkontrolujte diagnostiku v editoru, nespoléhejte jen na lint.

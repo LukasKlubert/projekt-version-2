@@ -1,0 +1,53 @@
+---
+description: Základní kontext projektu Fokus - stack, doménový slovník, příkazy, zakázané soubory.
+alwaysApply: true
+---
+
+# Projekt Fokus
+
+Studijní „deep work OS" pro jednoho uživatele. Veškerá data jsou lokální v localStorage, žádný backend ani databáze.
+
+## Stack
+
+- TanStack Start + TanStack Router (file-based routing v `src/routes/`)
+- React 19, TypeScript ve strict módu
+- Tailwind v4 (konfigurace přes `@theme` v `src/styles.css`, žádný `tailwind.config.js`)
+- shadcn/ui (style new-york) v `src/components/ui/`
+- Vitest, prostředí `node`
+
+## Jazyk
+
+Uživatelské texty a komentáře v kódu jsou **česky**. Identifikátory (názvy funkcí, typů, proměnných) jsou **anglicky**. Držte tohle rozdělení i v novém kódu.
+
+Ustálené anglické výrazy v UI neměňte na české: `Must Do`, `Should Do`, `Nice to Have`, `Dashboard`, `Deep Work`.
+
+## Doménový slovník
+
+- **Tier** — priorita úkolu: `"must" | "should" | "nice"`. Vyšší tier se odemkne až po splnění nižšího.
+- **Streak (série)** — počet po sobě jdoucích dnů, kdy byly splněny všechny dnešní Must Do úkoly. Odškrtnutí úkolu zpět týž den sérii odebere.
+- **Inbox** — rychlé záznamy z quick capture. Typ se určuje z prefixu textu: `#úkol` → `task`, `#nápad` → `idea`, jinak `note`.
+- **Placement** — umístění inboxové položky do konkrétního dne a tieru v týdenním plánovači. Slot je zkratka dne (`Po`–`Ne`) nebo `"anytime"`.
+- **Projekt typu Action** — plochý seznam úkolů.
+- **Projekt typu Study** — hierarchie složek a témat, každé téma má SM-2 stav pro opakování.
+- **SM-2** — algoritmus rozloženého opakování v `src/lib/sm2.ts`. Známky `hard` / `medium` / `easy` odpovídají Anki `Again` / `Hard` / `Good`.
+
+## Příkazy
+
+```
+npm test          # vitest run
+npm run lint      # eslint
+npm run dev       # vite dev
+npm run format    # prettier
+```
+
+Po každé změně logiky spusťte `npm test`, po každé změně kódu `npm run lint`.
+
+## Nikdy needitovat
+
+- `src/routeTree.gen.ts` — generuje TanStack Router plugin automaticky
+- `src/components/ui/**` — vygenerované shadcn komponenty; místo úprav vytvořte vlastní komponentu, která je obalí
+- `package-lock.json` ručně — jen přes `npm`
+
+## Git
+
+Projekt je propojený s Lovable. **Nikdy nepřepisujte publikovanou historii** — žádný force push, rebase, amend ani squash už pushnutých commitů. Commity musí nechávat branch ve funkčním stavu.
