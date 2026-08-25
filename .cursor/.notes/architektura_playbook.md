@@ -6,6 +6,8 @@ date: 2026-08-23
 
 # CTO playbook
 
+"POZNÁMKA PRO AGENTY: Tento dokument obsahuje technické a architektonické standardy naší továrny. V případě jakéhokoliv rozporu je nadřazeným a absolutním dokumentem Ústava.md."
+
 > **Komu je určeno:** dalšímu CTO/koordinačnímu chatu, který převezme projekt Fokus poté, co předchozímu dojde kontext.
 >
 > **Proč existuje:** postavení tohoto týmu předcházel průzkum projektu a dokumentace Cursoru. Tenhle dokument ten průzkum shrnuje, abys ho nemusel opakovat. Obsahuje i seznam věcí, které dokumentace **neuvádí** — to je nejcennější část, protože právě na nich se dá ztratit nejvíc času nebo si něco vymyslet.
@@ -14,12 +16,12 @@ date: 2026-08-23
 
 ## 1. Současný tým
 
-| Role      | Mechanismus         | Soubor                              | Vyvolání                    | Model                                              |
-| --------- | ------------------- | ----------------------------------- | --------------------------- | -------------------------------------------------- |
-| Architekt | Custom Mode (skill) | `.cursor/skills/architekt/SKILL.md` | `/architekt` + `Alt+Enter`  | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
-| Vývojář   | subagent            | `.cursor/agents/vyvojar.md`         | `/vyvojar`                  | pinnuto `claude-4.5-sonnet-thinking`               |
-| Auditor   | Custom Mode (skill) | `.cursor/skills/auditor/SKILL.md`   | `/auditor` + `Alt+Enter`    | ruční výběr, doporučeno `gpt-5.6-sol-medium`      |
-| CTO       | Custom Mode (skill) | `.cursor/skills/cto/SKILL.md`       | `/cto` + `Alt+Enter`        | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
+| Role      | Mechanismus         | Soubor                              | Vyvolání                   | Model                                                 |
+| --------- | ------------------- | ----------------------------------- | -------------------------- | ----------------------------------------------------- |
+| Architekt | Custom Mode (skill) | `.cursor/skills/architekt/SKILL.md` | `/architekt` + `Alt+Enter` | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
+| Vývojář   | subagent            | `.cursor/agents/vyvojar.md`         | `/vyvojar`                 | pinnuto `claude-4.5-sonnet-thinking`                  |
+| Auditor   | Custom Mode (skill) | `.cursor/skills/auditor/SKILL.md`   | `/auditor` + `Alt+Enter`   | ruční výběr, doporučeno `gpt-5.6-sol-medium`          |
+| CTO       | Custom Mode (skill) | `.cursor/skills/cto/SKILL.md`       | `/cto` + `Alt+Enter`       | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
 
 Plus tři workflow skills (`novy-ukol`, `pred-commitem`, `audit`) a pět pravidel v `.cursor/rules/`.
 

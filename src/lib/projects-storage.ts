@@ -16,6 +16,44 @@ export const normalizeProjects = (raw: unknown): Project[] =>
     folders: (p.folders ?? []).map(normalizeFolder),
   }));
 
+/** Bezpečné parsování projektových dat s rozlišením empty/valid/corrupted. */
+export function parseProjectsSafe(raw: string | null): {
+  projects: Project[];
+  status: "empty" | "valid" | "corrupted";
+  raw?: string;
+} {
+  // Chybí klíč → legitimní prázdno
+  if (!raw) return { projects: [], status: "empty" };
+
+  try {
+    const parsed = JSON.parse(raw);
+    const normalized = normalizeProjects(parsed);
+
+    // Validace: musí být pole
+    if (!Array.isArray(parsed)) {
+      return { projects: [], status: "corrupted", raw };
+    }
+
+    // Validace: každý projekt musí mít id, name, kind
+    const allValid = normalized.every(
+      (p) =>
+        typeof p.id === "string" &&
+        p.id.length > 0 &&
+        typeof p.name === "string" &&
+        (p.kind === "action" || p.kind === "study"),
+    );
+
+    if (!allValid) {
+      return { projects: [], status: "corrupted", raw };
+    }
+
+    return { projects: normalized, status: "valid" };
+  } catch {
+    // Parse error nebo normalize error
+    return { projects: [], status: "corrupted", raw };
+  }
+}
+
 /** Načte a normalizuje projekty z localStorage. */
 export function readProjects(): Project[] {
   try {

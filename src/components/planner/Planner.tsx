@@ -40,9 +40,22 @@ const PANEL_TABS = [
 
 type PanelTab = (typeof PANEL_TABS)[number]["id"];
 
+function overdueLabel(count: number): string {
+  if (count === 1) return "1 rest z minulých dnů";
+  if (count >= 2 && count <= 4) return `${count} resty z minulých dnů`;
+  return `${count} restů z minulých dnů`;
+}
+
 export function Planner() {
-  const { inbox, placements, setPlacement, removePlacement, removeFromInbox, addToInbox } =
-    useAppStore();
+  const {
+    inbox,
+    placements,
+    setPlacement,
+    removePlacement,
+    removeFromInbox,
+    addToInbox,
+    overdueCount,
+  } = useAppStore();
   const [weekOffset, setWeekOffset] = useState(0);
   const [mobileTab, setMobileTab] = useState<"inbox" | "plan">("inbox");
   const [panelTab, setPanelTab] = useState<PanelTab>("inbox");
@@ -139,6 +152,10 @@ export function Planner() {
               </button>
             ))}
           </div>
+
+          {panelTab === "inbox" && overdueCount > 0 && (
+            <p className="mt-2 text-xs text-destructive">{overdueLabel(overdueCount)}</p>
+          )}
 
           <ul className="mt-3 flex-1 space-y-2 lg:min-h-0 lg:overflow-y-auto">
             {panelTab === "inbox" &&

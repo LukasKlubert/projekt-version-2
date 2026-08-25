@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Brain, ChevronRight, Rocket } from "lucide-react";
+import { AlertTriangle, Brain, ChevronRight, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PROJECTS_STORAGE_KEY, normalizeProjects, writeProjects } from "@/lib/projects-storage";
+import { PROJECTS_STORAGE_KEY, parseProjectsSafe, writeProjects } from "@/lib/projects-storage";
 import { ActionFolder } from "./ActionFolder";
 import { AddFolderButton, EmptyFolderCard, FolderCard } from "./FolderCard";
 import { NewProjectDialog } from "./NewProjectDialog";
@@ -22,20 +22,37 @@ export function Projects() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [writeAllowed, setWriteAllowed] = useState(false);
+  const [hasCorruptedData, setHasCorruptedData] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(PROJECTS_STORAGE_KEY);
-      if (raw) setProjects(normalizeProjects(JSON.parse(raw)));
-    } catch {
-      /* ignore corrupted state */
+    const raw = localStorage.getItem(PROJECTS_STORAGE_KEY);
+    const result = parseProjectsSafe(raw);
+
+    setProjects(result.projects);
+
+    if (result.status === "corrupted" && result.raw) {
+      // Uložit zálohu
+      const backupKey = `${PROJECTS_STORAGE_KEY}-backup-${Date.now()}`;
+      localStorage.setItem(backupKey, result.raw);
+
+      // Zablokovat zápis
+      setWriteAllowed(false);
+      setHasCorruptedData(true);
+
+      console.error("Poškozená data projektů uložena do:", backupKey);
+    } else {
+      // Prázdné nebo validní → zápis povolen
+      setWriteAllowed(true);
     }
+
     setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (hydrated) writeProjects(projects);
-  }, [projects, hydrated]);
+    if (!hydrated || !writeAllowed) return;
+    writeProjects(projects);
+  }, [projects, hydrated, writeAllowed]);
 
   const project = useMemo(
     () => projects.find((p) => p.id === projectId) ?? null,
@@ -71,6 +88,20 @@ export function Projects() {
   if (!project) {
     return (
       <div className="space-y-4">
+        {hasCorruptedData && (
+          <div className="rounded-lg border border-destructive bg-destructive/10 p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-destructive" />
+              <div className="flex-1 space-y-2">
+                <p className="font-medium text-destructive">Projektová data byla poškozená</p>
+                <p className="text-sm text-muted-foreground">
+                  Tvoje projekty nebyly ztraceny, ale změny se dočasně neukládají. Data byla
+                  automaticky zálohována. Pokračuj v prohlížení nebo kontaktuj podporu.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         {projects.length === 0 ? (
           <EmptyFolderCard
             label="Nový projekt"
