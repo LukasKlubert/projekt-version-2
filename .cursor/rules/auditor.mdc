@@ -1,7 +1,5 @@
 ---
-alwaysApply: true
----
----
+alwaysApply: false
 description: Pravidla pro roli Auditora. Nekompromisní kontrolor kódu a bezpečnosti. Kontroluje práci Vývojáře proti zadání Architekta před commitem.
 globs: *
 ---

@@ -8,13 +8,17 @@ date: 2026-08-23
 
 "POZNÁMKA PRO AGENTY: Tento dokument obsahuje technické a architektonické standardy naší továrny. V případě jakéhokoliv rozporu je nadřazeným a absolutním dokumentem Ústava.md."
 
+> **ARCHIVNÍ POZNÁMKA (2026-08-25):** Restrukturalizace (commit `99d7361 restrukturalizace firmy`) nahradila tým Custom Mode skillů + subagenta Vývojáře (sekce 1 níže) pěti pravidly v `.cursor/rules/` (`coo.mdc`, `architekt.mdc`, `vyvojar.mdc`, `auditor.mdc`, `mentor.mdc`). Role COO a CTO byly sloučeny/přejmenovány na COO. Sekce 1, 6 a 10 popisují **starý, už neplatný stav** — ponechány jako historický záznam rozhodnutí a jako záložní plán, kdyby se k mechanismu Custom Mode/subagent bylo potřeba vrátit. Sekce 2–5, 7–9 (obecná fakta o mechanismech Cursoru a mapa projektu Fokus) zůstávají platné.
+
 > **Komu je určeno:** dalšímu CTO/koordinačnímu chatu, který převezme projekt Fokus poté, co předchozímu dojde kontext.
 >
 > **Proč existuje:** postavení tohoto týmu předcházel průzkum projektu a dokumentace Cursoru. Tenhle dokument ten průzkum shrnuje, abys ho nemusel opakovat. Obsahuje i seznam věcí, které dokumentace **neuvádí** — to je nejcennější část, protože právě na nich se dá ztratit nejvíc času nebo si něco vymyslet.
 
 ---
 
-## 1. Současný tým
+## 1. Tým – historický stav (Custom Mode / subagent éra, do commitu `99d7361`)
+
+> Tato tabulka už neodpovídá realitě — viz archivní poznámka nahoře. Aktuální tým: `coo.mdc`, `architekt.mdc`, `vyvojar.mdc`, `auditor.mdc`, `mentor.mdc` v `.cursor/rules/`, vyvolání přes `@nazev.mdc`. Žádné skilly v `.cursor/skills/` pro role, žádný subagent Vývojáře v `.cursor/agents/`.
 
 | Role      | Mechanismus         | Soubor                              | Vyvolání                   | Model                                                 |
 | --------- | ------------------- | ----------------------------------- | -------------------------- | ----------------------------------------------------- |
@@ -177,7 +181,9 @@ Dokumentace k tomu dodává: pokud zakládáš subagenta na jednoúčelovou věc
 
 ---
 
-## 6. Šablona: nový subagent
+## 6. Šablona: nový subagent (mechanismus se aktuálně nepoužívá, viz sekce 1)
+
+> Aktuální tým žádného z těchto dvou mechanismů nevyužívá — nové role se přidávají jako `.mdc` pravidlo (šablona v `.cursor/.notes/sablona-noveho-agenta.md`). Tahle šablona zůstává jako referenční postup pro budoucnost, kdyby role potřebovala vynucený model nebo izolovaný kontext (viz sekce 10).
 
 ```markdown
 ---
@@ -277,7 +283,9 @@ src/routeTree.gen.ts         generovaný, needitovat
 - **Hooks na automatický lint a test po editaci.** Uživatel je zatím nechtěl. Šlo by přes `afterFileEdit`.
 - **Izolované worktree pro subagenty.** Cursor umí dát subagentovi vlastní git worktree. Zajímavé, až by běželo víc implementátorů paralelně; při jednom je to zbytečná režie.
 
-## 10. Záložní plán, kdyby Custom Mode nešel použít
+## 10. Záložní plán, kdyby Custom Mode nešel použít (historický — nahrazeno rules, ne subagenty)
+
+> Realita po `99d7361` je jiná, než tento plán předpokládal: tým se nepřeklopil na subagenty, ale na `.cursor/rules/*.mdc` pravidla vyvolávaná přes `@mention`. Ponecháno jako referenci pro úvahu, kdyby v budoucnu byl potřeba vynucený `model` nebo `readonly: true`, které pravidla neumí.
 
 Pokud by se Architekt, Auditor nebo CTO nedali v daném prostředí spustit jako režim, dají se překlopit na subagenty do `.cursor/agents/`. Získá se tím dvojí:
 

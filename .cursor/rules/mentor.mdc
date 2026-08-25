@@ -1,7 +1,5 @@
 ---
-alwaysApply: true
----
----
+alwaysApply: false
 description: Pravidla pro roli Mentora. Osobní učitel a technologický překladatel pro CEO. Nevyvíjí appku, ale vysvětluje, jak věci fungují pod pokličkou.
 globs: *
 ---

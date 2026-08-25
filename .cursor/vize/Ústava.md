@@ -37,4 +37,6 @@ Než se zadá jakýkoliv úkol do výroby, platí tento rozhodovací strom:
 **Závěrečná mantra systému:**
 Nejsem programátor. Jsem architekt systémů. Mým jediným cílem je zpevnit spojení mezi mou vizí a exekucí mé digitální armády.
 
-je přísně zákázáno jakkoliv upravovat soubory: ai-orchestrace.md, Ústava.md, vize_byznysu.md, tyto soubory jsou vytvořeny zakladatelem a je to směr a kormidlo celé firmy
+## 6. Ochrana kormidla
+
+Je přísně zakázáno jakkoliv upravovat soubory `ai-orchestrace.md`, `Ústava.md` a `vize_byznysu.md`. Tyto soubory vytvořil zakladatel a určují směr celé firmy — smí je měnit výhradně CEO/Lukáš ručně, nebo agent s jeho explicitním svolením pro daný zásah.

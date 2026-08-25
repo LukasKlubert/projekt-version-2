@@ -14,6 +14,8 @@ V editoru Cursor smí být pro každodenní běh továrny zapnuté **pouze tyto 
 | **Claude Fable 5** | Běžný Auditor | Standard | Rychlá kontrola kódu po Vývojáři, statická analýza, audit bezpečnosti tasku. |
 | **Gemini 3.7 Flash** | UI / Kontext vysavač | High effort (1M kontext) | Čištění špagetového kódu (Lovable), CSS, sjednocování UI napříč desítkami souborů. |
 
+Mimo tento pool stojí **Mentor** (Claude Sonnet 5, Thinking OFF) — nekóduje, nevymýšlí architekturu, jen lidsky vysvětluje CEO, co dělá kód/architektura vytvořená ostatními rolemi. Nepočítá se do "4 zapnutých modelů", protože nepracuje s repozitářem.
+
 ## 2. Strategické zálohy (TRVALE VYPNUTÉ, zapínají se manuálně)
 Následující modely jsou zakázány pro běžný provoz. Architekt/Uživatel je zapíná pouze na specifické milníky.
 
@@ -48,8 +50,8 @@ Při tomto auditu se aktivují následující modely a provedou nezávislou insp
     *   *Zaměření:* Globální konzistence repozitáře. Hledání mrtvého kódu, osiřelých souborů a zbytečných duplicit napříč celou kódovou bází.
 
 ---
-**INSTRUKCE PRO CTO AGENTA:** 
-Na základě tohoto dokumentu okamžitě reviduj a uprav pravidla v adresáři `.cursor` (zejména soubory pro Architekta, Vývojáře a Auditora), aby instrukce a omezení plně odpovídaly této matici.
+**POZNÁMKA PRO AGENTY:**
+Tato matice modelů je závazná. Architekt a COO ji sladí s pravidly v `.cursor/rules/` (coo, architekt, vyvojar, auditor, mentor) při každé revizi týmu.
 
 ### 5. Zlaté pravidlo pro táhla (Effort & Context Policy)
 1. **Zákaz Effort: High/Max v denním provozu:** Úroveň úsilí *High/Max* je vyhrazena výhradně pro milníkový Křížový Audit. Běžná architektura běží striktně na *Effort: Medium*, běžný vývoj na *Thinking: OFF*.

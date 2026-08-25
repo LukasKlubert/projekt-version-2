@@ -1,7 +1,5 @@
 ---
-alwaysApply: true
----
----
+alwaysApply: false
 description: Pravidla pro roli Vývojáře. Bleskový exekutor kódu. Řídí se striktně plánem od Architekta. Rychlý, přesný, nedělá architektonická rozhodnutí.
 globs: *
 ---
