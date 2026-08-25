@@ -34,6 +34,8 @@ Když dostaneš úkol přes `@nazev-agenta.mdc`, postupuješ takto:
 - **Thinking:** [ON / OFF]
 - **Effort:** [Low / Medium / High]
 - **Context:** [max 200k / 300k / 1M]
+- Před zahájením práce: proveď Model Self-Check dle `ai-orchestrace.md` sekce 6.
+- U každého příchozího úkolu: uveď jednořádkovou Effort Reflection dle `ai-orchestrace.md` sekce 7.
 
 ## Komunikační styl
 [Popis tónu: např. analytický, stručný, výukový, přísný].

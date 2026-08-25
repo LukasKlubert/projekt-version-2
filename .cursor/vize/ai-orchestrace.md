@@ -7,6 +7,8 @@ Cílem je maximalizovat kvalitu kódu a minimalizovat zbytečné pálení kredit
 ## 1. Aktivní arzenál (Modely, které jsou TRVALE ZAPNUTÉ)
 V editoru Cursor smí být pro každodenní běh továrny zapnuté **pouze tyto 4 modely**. Všechny ostatní musí být v nastavení přepnuty na OFF, aby se předešlo duplicitám a plýtvání tokeny.
 
+Tato tabulka je základní přehled všech rolí v továrně. Když COO nabírá novou specializovanou roli (viz `coo.mdc`, sekce 4), přidá pro ni nový řádek přímo sem — je to jediný zápis do tohoto souboru, který má COO povolený.
+
 | Model | Role v továrně | Nastavení (Thinking) | Hlavní úkol |
 | :--- | :--- | :--- | :--- |
 | **Claude Sonnet 5** | COO / Architekt | OFF pro COO / ON (Medium) pro Architekta | Správa .mdc pravidel, tvorba SOP, rozpad velkého zadání na atomické úkoly. |
@@ -56,3 +58,17 @@ Tato matice modelů je závazná. Architekt a COO ji sladí s pravidly v `.curso
 ### 5. Zlaté pravidlo pro táhla (Effort & Context Policy)
 1. **Zákaz Effort: High/Max v denním provozu:** Úroveň úsilí *High/Max* je vyhrazena výhradně pro milníkový Křížový Audit. Běžná architektura běží striktně na *Effort: Medium*, běžný vývoj na *Thinking: OFF*.
 2. **Kontextové okno 1M pouze pro Gemini:** 1M kontext se zapíná výhradně u Gemini 3.7 Flash při masivním čištění front-endu. Ostatní modely pracují ve standardním pásmu 200k–300k.
+
+## 6. Model Self-Check Protocol (Kontrola modelu na startu)
+Na začátku KAŽDÉHO nového chatu, hned po přečtení své role a **PŘED jakoukoliv analýzou nebo prací na úkolu**, musí agent zkontrolovat, jaký model/Thinking/Effort/Context má uživatel aktuálně nastavený v Cursoru, a porovnat ho se svou vlastní sekcí "Nastavení Modelu" v příslušném `.mdc` souboru.
+
+- **Pokud nastavení nesedí:** Agent to napíše jako úplně první věc v odpovědi (např. *"Máš zapnutý model X, doporučený je Y. Chceš přepnout, nebo mi napiš důvod, proč zůstat na X."*) a počká na rozhodnutí CEO, než se pustí do samotného úkolu.
+- **Pokud nastavení sedí:** Agent nic nehlásí a rovnou pokračuje.
+- Toto pravidlo platí pro všechny role bez výjimky — i pro Mentora a pro jakoukoliv budoucí novou roli zapsanou do tabulky v sekci 1.
+
+## 7. Effort Reflection (Sebehodnocení náročnosti úkolu)
+U každého příchozího úkolu agent v jedné krátké větě na začátku odpovědi (hned po případném Model Self-Checku) uvede odhad náročnosti a doporučený Effort s důvodem — cílem je úspora kreditů a transparentnost nákladu ještě předtím, než se spustí samotná práce.
+
+- Příklad: *"Effort: Medium (rutinní úprava, nevyžaduje High/Max)."*
+- Nejde o dotaz navíc ani o blokující krok — je to jen jedna transparentní věta v odpovědi. Práce pokračuje ihned dál, pokud CEO nezasáhne.
+- Toto pravidlo doplňuje bod 5 (Zlaté pravidlo pro táhla) — dělá self-assessment viditelným pro CEO u každého jednotlivého úkolu, ne jen jako obecnou politiku.
