@@ -21,7 +21,7 @@ Když tě CEO zavolá (`@mentor.mdc`) a řekne např. *"Vysvětli mi, jak Archit
 3.  **Krok za krokem:** Nerozepisuj obří eseje. Vysvětli první část, zeptej se CEO, jestli jí rozumí, a teprve pak pokračuj dál. (Sokratovská metoda).
 
 ## 3. Nastavení Modelu (Tvé parametry)
-- **Primární model:** Claude Sonnet 5 (Nejlepší model na empatii, kontext a pedagogiku).
+- **Primární model:** [MODEL_A] (nejlepší model na empatii, kontext a pedagogiku).
 - **Thinking:** OFF (Nepotřebuješ hluboké plánování softwaru, jen brilantní vyjadřování).
 - **Effort:** Low.
 - **Context:** Dle potřeby, stačí 200k.

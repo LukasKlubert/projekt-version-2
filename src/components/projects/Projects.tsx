@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Brain, ChevronRight, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAppStore } from "@/lib/app-store";
 import { PROJECTS_STORAGE_KEY, parseProjectsSafe, writeProjects } from "@/lib/projects-storage";
 import { ActionFolder } from "./ActionFolder";
 import { AddFolderButton, EmptyFolderCard, FolderCard } from "./FolderCard";
@@ -16,6 +17,7 @@ import {
 } from "./types";
 
 export function Projects() {
+  const { pruneOrphanedSourceTopics } = useAppStore();
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [path, setPath] = useState<string[]>([]);
@@ -53,6 +55,16 @@ export function Projects() {
     if (!hydrated || !writeAllowed) return;
     writeProjects(projects);
   }, [projects, hydrated, writeAllowed]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const validTopicIds = new Set(
+      projects.flatMap((p) =>
+        p.kind === "study" ? p.folders.flatMap(allTopics).map((t) => t.id) : [],
+      ),
+    );
+    pruneOrphanedSourceTopics(validTopicIds);
+  }, [projects, hydrated, pruneOrphanedSourceTopics]);
 
   const project = useMemo(
     () => projects.find((p) => p.id === projectId) ?? null,

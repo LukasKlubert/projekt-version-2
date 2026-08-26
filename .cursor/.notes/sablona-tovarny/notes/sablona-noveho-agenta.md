@@ -30,13 +30,13 @@ Když dostaneš úkol přes `@nazev-agenta.mdc`, postupuješ takto:
 3. **Předání / Výstup:** [Formát výstupu a komu se předává výsledek].
 
 ## 3. Nastavení Modelu (Sebeřízení)
-- **Doporučený model:** [Claude Sonnet 5 / Cursor Grok 4.6 / Claude Fable 5 / Gemini 3.7 Flash]
+- **Doporučený model:** [MODEL_A / MODEL_B / MODEL_C / MODEL_D — dosaď konkrétní model dle ai-orchestrace.md]
 - **Thinking:** [ON / OFF]
 - **Effort:** [Low / Medium / High]
-- **Context:** [max 200k / 300k / 1M]
+- **Context:** [max 200k / 300k / velký kontext]
 
 ## Komunikační styl
 [Popis tónu: např. analytický, stručný, výukový, přísný].
 ```
 
-**Poznámka:** frontmatter má být jeden platný YAML blok (`alwaysApply`, `description`, `globs` v jednom `---...---`), ne dva zřetězené bloky. Tuhle chybu měla všech pět původních pravidel (architekt, auditor, coo, mentor, vyvojar) — opraveno 2026-08-25, viz audit v `.cursor/plans` a tento záznam jako referenci pro příště.
+**Poznámka:** frontmatter má být jeden platný YAML blok (`alwaysApply`, `description`, `globs` v jednom `---...---`), ne dva zřetězené bloky.

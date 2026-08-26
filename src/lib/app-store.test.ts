@@ -4,8 +4,11 @@ import {
   computeStreak,
   msUntilMidnight,
   mustProgress,
+  pruneOrphanedSourceTopics,
   todayIndex,
   validatePersisted,
+  type InboxItem,
+  type Placement,
   type Task,
 } from "./app-store";
 
@@ -310,5 +313,36 @@ describe("validatePersisted", () => {
     const result = validatePersisted(multipleErrors);
     expect(result.isValid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(3);
+  });
+});
+
+describe("pruneOrphanedSourceTopics", () => {
+  const item = (id: string, sourceTopicId?: string): InboxItem => ({
+    id,
+    text: id,
+    type: "task",
+    createdAt: "2026-08-26T10:00:00Z",
+    ...(sourceTopicId ? { sourceTopicId } : {}),
+  });
+
+  const placement = (): Placement => ({ slot: "Po", tier: "must", completion: {} });
+
+  it("smaže položku s neplatným sourceTopicId i její placement", () => {
+    const inbox = [item("a", "gone"), item("b", "keep"), item("c")];
+    const placements: Record<string, Placement> = {
+      a: placement(),
+      b: placement(),
+      c: placement(),
+    };
+    const next = pruneOrphanedSourceTopics(inbox, placements, new Set(["keep"]));
+    expect(next).not.toBeNull();
+    expect(next!.inbox.map((i) => i.id)).toEqual(["b", "c"]);
+    expect(Object.keys(next!.placements)).toEqual(["b", "c"]);
+  });
+
+  it("je no-op když jsou všechna sourceTopicId platná", () => {
+    const inbox = [item("a", "keep")];
+    const placements: Record<string, Placement> = { a: placement() };
+    expect(pruneOrphanedSourceTopics(inbox, placements, new Set(["keep"]))).toBeNull();
   });
 });

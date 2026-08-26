@@ -376,6 +376,24 @@ export function stripTags(text: string) {
   return text.replace(/#\S+/g, "").trim() || text;
 }
 
+/** Odstraní inbox položky s sourceTopicId mimo platná Study témata. Null = no-op. */
+export function pruneOrphanedSourceTopics(
+  inbox: InboxItem[],
+  placements: Record<string, Placement>,
+  validTopicIds: Set<string>,
+): { inbox: InboxItem[]; placements: Record<string, Placement> } | null {
+  const orphanIds = new Set(
+    inbox.filter((i) => i.sourceTopicId && !validTopicIds.has(i.sourceTopicId)).map((i) => i.id),
+  );
+  if (orphanIds.size === 0) return null;
+  const nextPlacements = { ...placements };
+  for (const id of orphanIds) delete nextPlacements[id];
+  return {
+    inbox: inbox.filter((i) => !orphanIds.has(i.id)),
+    placements: nextPlacements,
+  };
+}
+
 /** Naplánované položky, které patří do dnešního to-do listu. */
 export function plannedTasksForToday(
   inbox: InboxItem[],
@@ -407,6 +425,7 @@ type Store = Persisted & {
   resetProfile: () => void;
   addToInbox: (text: string, options?: { sourceTopicId?: string }) => string | null;
   removeFromInbox: (id: string) => void;
+  pruneOrphanedSourceTopics: (validTopicIds: Set<string>) => void;
   setPlacement: (id: string, slot: string, tier: Tier) => void;
   removePlacement: (id: string) => void;
   timerOpen: boolean;
@@ -629,6 +648,14 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const pruneOrphanedInbox = useCallback((validTopicIds: Set<string>) => {
+    setState((s) => {
+      const next = pruneOrphanedSourceTopics(s.inbox, s.placements, validTopicIds);
+      if (!next) return s;
+      return { ...s, inbox: next.inbox, placements: next.placements };
+    });
+  }, []);
+
   const setPlacement = useCallback((id: string, slot: string, tier: Tier) => {
     setState((s) => ({
       ...s,
@@ -735,6 +762,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     resetProfile,
     addToInbox,
     removeFromInbox,
+    pruneOrphanedSourceTopics: pruneOrphanedInbox,
     setPlacement,
     removePlacement,
     timerOpen,

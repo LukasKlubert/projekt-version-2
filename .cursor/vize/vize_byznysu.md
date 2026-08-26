@@ -35,3 +35,30 @@ Firmy nám budou platit prémiové částky za to, že jim dodáme krev do "Vrst
 ---
 **Závěr (Naše Severka):**
 Dnes lidé vnímají AI jako hrozbu. Zítra, díky naší aplikaci, objeví svou vlastní nezastupitelnou hodnotu. Nejsme ed-tech startup. Jsme infrastruktura nového lidství na trhu práce.
+
+## 5. vize_privacy_tržiště
+### Vize: Privacy-First tržiště talentů
+
+Tento model nestaví další sledovací platformu, ale **etické, decentralizované tržiště schopností** pro éru AI, kde uživatel neztrácí kontrolu nad svými daty.
+
+---
+
+### Základní pilíře fungování
+
+* **100% bezplatný základ (Trojský kůň):** Fokus slouží jako plně funkční, bezplatný deep-work OS pro širokou veřejnost bez jakýchkoliv vstupních bariér.
+* **Volitelný AI ekosystém:** Uživatel se sám rozhodne, zda zapne AI nadstavbu, která začne mapovat jeho systémové myšlení, reakce na zátěž a soft skills.
+* **Datová suverenita (Anti-Google):** Detailní behaviorální data zůstávají striktně v držení uživatele (respektive jeho osobní AI), centrála nefunguje jako masivní šmírovací databáze.
+* **B2B AI Orchestrátor & Leaderboard:** Samostatný AI COO pracuje pouze s anonymizovanými identifikátory (ID) a agregovaným skóre, na základě kterých sestavuje žebříčky talentů pro konkrétní role.
+* **Reverzní nábor za odměnu:** Systém sám osloví nejlepší jedince přímo v jejich rozhraní s konkrétní nabídkou propojení s firmami – bez nutnosti posílat tradiční životopisy.
+
+---
+
+### Strategická hodnota
+
+| Pro uživatele | Pro firmy |
+| :--- | :--- |
+| Bezplatný nástroj pro práci + osobní AI | Přístup k ověřeným lídrům (Vrstva 1) |
+| Plná kontrola nad vlastními daty | Okamžitý kontakt s lidmi, co mají reálný talent |
+| Přímé propojení s top nabídkami | Konec spoléhání na vygenerovaná CV |
+
+> **Shrnutí byznys modelu:** Nestavíme na prodeji uživatelských dat, ale na **zpoplatněném propojení prověřených talentů s firmami**, které zoufale hledají lidi schopné řídit autonomní AI systémy.

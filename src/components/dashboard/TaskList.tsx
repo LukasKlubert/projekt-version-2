@@ -20,7 +20,15 @@ const tiers: { id: Tier; title: string; dot: string }[] = [
 ];
 
 export function TaskList() {
-  const { tasks, toggleTask, unlocked, manualUnlock, startTimerFor, getInboxItem } = useAppStore();
+  const {
+    tasks,
+    toggleTask,
+    unlocked,
+    manualUnlock,
+    startTimerFor,
+    getInboxItem,
+    removeFromInbox,
+  } = useAppStore();
   const [open, setOpen] = useState<Partial<Record<Tier, boolean>>>({});
   const [grading, setGrading] = useState<{
     taskId: string;
@@ -56,30 +64,27 @@ export function TaskList() {
     const projects = readProjects();
     const result = findTopicById(projects, grading.topicId);
 
-    if (result) {
-      // Aplikuj známku
-      const updatedTopic = applyGradeToTopic(result.topic, grade);
-
-      // Aktualizuj projekt
-      const updatedProject = {
-        ...result.project,
-        folders: updateFolderAt(result.project.folders, result.path, (f) => ({
-          ...f,
-          topics: f.topics.map((t) => (t.id === updatedTopic.id ? updatedTopic : t)),
-        })),
-      };
-
-      // Ulož zpět
-      const updatedProjects = projects.map((p) =>
-        p.id === updatedProject.id ? updatedProject : p,
-      );
-      writeProjects(updatedProjects);
+    if (!result) {
+      console.error("Study téma nenalezeno, inbox položka se maže:", grading.topicId);
+      removeFromInbox(grading.taskId);
+      setGrading(null);
+      return;
     }
 
-    // Označ úkol jako hotový
-    toggleTask(grading.taskId);
+    const updatedTopic = applyGradeToTopic(result.topic, grade);
 
-    // Zavři modal
+    const updatedProject = {
+      ...result.project,
+      folders: updateFolderAt(result.project.folders, result.path, (f) => ({
+        ...f,
+        topics: f.topics.map((t) => (t.id === updatedTopic.id ? updatedTopic : t)),
+      })),
+    };
+
+    const updatedProjects = projects.map((p) => (p.id === updatedProject.id ? updatedProject : p));
+    writeProjects(updatedProjects);
+
+    toggleTask(grading.taskId);
     setGrading(null);
   };
 
