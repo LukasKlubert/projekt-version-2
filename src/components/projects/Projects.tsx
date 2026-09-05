@@ -1,8 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Brain, ChevronRight, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/lib/app-store";
-import { PROJECTS_STORAGE_KEY, parseProjectsSafe, writeProjects } from "@/lib/projects-storage";
+import {
+  PROJECTS_CHANGED_EVENT,
+  PROJECTS_STORAGE_KEY,
+  parseProjectsSafe,
+  writeProjects,
+} from "@/lib/projects-storage";
 import { ActionFolder } from "./ActionFolder";
 import { AddFolderButton, EmptyFolderCard, FolderCard } from "./FolderCard";
 import { NewProjectDialog } from "./NewProjectDialog";
@@ -26,6 +31,7 @@ export function Projects() {
   const [hydrated, setHydrated] = useState(false);
   const [writeAllowed, setWriteAllowed] = useState(false);
   const [hasCorruptedData, setHasCorruptedData] = useState(false);
+  const lastWrittenRef = useRef<string>("");
 
   useEffect(() => {
     const raw = localStorage.getItem(PROJECTS_STORAGE_KEY);
@@ -53,8 +59,27 @@ export function Projects() {
 
   useEffect(() => {
     if (!hydrated || !writeAllowed) return;
+    lastWrittenRef.current = JSON.stringify(projects);
     writeProjects(projects);
   }, [projects, hydrated, writeAllowed]);
+
+  useEffect(() => {
+    const onChange = () => {
+      const raw = localStorage.getItem(PROJECTS_STORAGE_KEY);
+      if (raw === lastWrittenRef.current) return;
+      const result = parseProjectsSafe(raw);
+      if (result.status === "valid") {
+        lastWrittenRef.current = raw ?? "";
+        setProjects(result.projects);
+      }
+    };
+    window.addEventListener(PROJECTS_CHANGED_EVENT, onChange);
+    window.addEventListener("storage", onChange);
+    return () => {
+      window.removeEventListener(PROJECTS_CHANGED_EVENT, onChange);
+      window.removeEventListener("storage", onChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (!hydrated) return;

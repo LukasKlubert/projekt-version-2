@@ -18,6 +18,14 @@ const sounds = [
   { id: "cafe", label: "Kavárna", icon: Coffee },
 ];
 
+/* eslint-disable react-refresh/only-export-components -- tickTimer je čistá funkce pro testy */
+/** Odečte jednu sekundu; dokončení jen při přechodu z 1 s na 0. */
+export function tickTimer(remaining: number): { remaining: number; justCompleted: boolean } {
+  if (remaining <= 0) return { remaining: 0, justCompleted: false };
+  if (remaining <= 1) return { remaining: 0, justCompleted: true };
+  return { remaining: remaining - 1, justCompleted: false };
+}
+
 export function DeepWorkTimer() {
   const { timerOpen, setTimerOpen, activeTaskTitle, addFocusMinutes } = useAppStore();
   const [minutes, setMinutes] = useState(50);
@@ -38,17 +46,16 @@ export function DeepWorkTimer() {
   useEffect(() => {
     if (!running) return;
     const id = setInterval(() => {
-      setRemaining((r) => {
-        if (r <= 1) {
-          setRunning(false);
-          addFocusMinutes(minutes);
-          return 0;
-        }
-        return r - 1;
-      });
+      setRemaining((r) => tickTimer(r).remaining);
     }, 1000);
     return () => clearInterval(id);
-  }, [running, minutes, addFocusMinutes]);
+  }, [running]);
+
+  useEffect(() => {
+    if (remaining !== 0 || !running) return;
+    setRunning(false);
+    addFocusMinutes(minutes);
+  }, [remaining, running, minutes, addFocusMinutes]);
 
   const total = minutes * 60;
   const progress = useMemo(() => 1 - remaining / total, [remaining, total]);
@@ -136,6 +143,8 @@ export function DeepWorkTimer() {
               variant="outline"
               size="lg"
               className="rounded-full"
+              aria-label="Restartovat časovač"
+              title="Restartovat časovač"
               onClick={() => {
                 setRemaining(minutes * 60);
                 setRunning(false);

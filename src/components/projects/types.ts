@@ -62,6 +62,11 @@ export function normalizeTopic(raw: Partial<Topic> & { id: string; title: string
   };
 }
 
+/** True, pokud téma už dnes dostalo známku. */
+export function wasGradedToday(topic: Topic, today: string = toDateKey()): boolean {
+  return topic.lastReviewedAt === today;
+}
+
 /** Známka (chip) → nový level + SM-2 plán. */
 export function applyGradeToTopic(t: Topic, level: Level, today = toDateKey()): Topic {
   if (level === "none") return { ...t, level, ...resetSm2() };

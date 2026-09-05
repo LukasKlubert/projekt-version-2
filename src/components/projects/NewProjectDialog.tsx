@@ -58,10 +58,13 @@ export function NewProjectDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Typ projektu">
             {kinds.map((k) => (
               <button
                 key={k.id}
+                type="button"
+                role="radio"
+                aria-checked={kind === k.id}
                 onClick={() => setKind(k.id)}
                 className={cn(
                   "rounded-2xl border border-border bg-surface-2/40 p-3 text-left transition-colors",
@@ -77,6 +80,7 @@ export function NewProjectDialog({
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
+            aria-label="Název projektu"
             placeholder="Název projektu *"
             className="w-full rounded-2xl border border-border bg-surface-2/40 px-4 py-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary/50"
           />

@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { Level } from "@/components/projects/types";
 
@@ -26,33 +26,20 @@ export function GradeModal({
   onClose: () => void;
 }) {
   return (
-    <div
-      className="fixed inset-0 z-50 grid place-items-center bg-background/70 p-4 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <div
-        role="dialog"
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-3xl glass-card p-6"
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <h3 className="font-display text-lg font-bold">Jak ti šlo opakování?</h3>
-            <p className="mt-1 truncate text-sm text-muted-foreground">{topicTitle}</p>
-          </div>
-          <button
-            onClick={onClose}
-            aria-label="Zavřít"
-            className="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="w-full max-w-md rounded-3xl glass-card p-6">
+        <DialogHeader>
+          <DialogTitle className="font-display text-lg font-bold">
+            Jak ti šlo opakování?
+          </DialogTitle>
+          <p className="mt-1 truncate text-sm text-muted-foreground">{topicTitle}</p>
+        </DialogHeader>
 
-        <div className="mt-6 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           {grades.map((g) => (
             <button
               key={g.level}
+              type="button"
               onClick={() => onGrade(g.level)}
               className={cn("rounded-2xl px-4 py-3 font-medium transition-colors", g.color)}
             >
@@ -61,10 +48,10 @@ export function GradeModal({
           ))}
         </div>
 
-        <p className="mt-4 text-center text-xs text-muted-foreground">
+        <p className="text-center text-xs text-muted-foreground">
           Toto nastaví postup tématu a naplánuje příští opakování
         </p>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,7 +1,5 @@
 ---
 alwaysApply: false
-description: Spuštění Komplexního křížového auditu (milníkový audit před releasem) — tři nezávislé subagenty, každý na jiném modelu a s jiným zaměřením, jejich výstupy se zřetězí a předají Architektovi k syntéze.
-globs: *
 ---
 # ROLE: AI Komplexní audit (Speciální milníkový režim Auditora)
 

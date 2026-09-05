@@ -11,6 +11,7 @@ import {
   Trash2,
   Brain,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import {
   useAppStore,
@@ -56,7 +57,6 @@ export function Planner() {
     addToInbox,
     overdueCount,
   } = useAppStore();
-  const [weekOffset, setWeekOffset] = useState(0);
   const [mobileTab, setMobileTab] = useState<"inbox" | "plan">("inbox");
   const [panelTab, setPanelTab] = useState<PanelTab>("inbox");
   const [dragOver, setDragOver] = useState<string | null>(null);
@@ -100,12 +100,6 @@ export function Planner() {
     setDraft(null);
   };
 
-  const weekLabel =
-    weekOffset === 0
-      ? "Tento týden"
-      : weekOffset < 0
-        ? `${Math.abs(weekOffset)} týden zpět`
-        : `${weekOffset} týden vpřed`;
   const detail = SLOTS.find((s) => s.id === detailSlot);
 
   return (
@@ -185,6 +179,7 @@ export function Planner() {
                   <button
                     onClick={() => removeFromInbox(item.id)}
                     aria-label="Smazat záznam"
+                    title="Smazat záznam"
                     className="grid h-7 w-7 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground opacity-0 transition-all hover:bg-destructive/15 hover:text-destructive focus-visible:opacity-100 group-hover:opacity-100"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -319,22 +314,26 @@ export function Planner() {
         >
           <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-3xl glass-card px-4 py-3 lg:py-2.5">
             <button
-              onClick={() => setWeekOffset((w) => w - 1)}
+              type="button"
+              disabled
               aria-label="Předchozí týden"
-              className="grid h-8 w-8 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+              title="Vícetýdenní plánování zatím není podporováno"
+              className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <div className="min-w-0 text-center">
-              <p className="truncate font-display text-sm font-bold">{weekLabel}</p>
+              <p className="truncate font-display text-sm font-bold">Tento týden</p>
               <p className="text-[11px] text-muted-foreground">
                 Naplánováno {Math.floor(totalMinutes / 60)} h {totalMinutes % 60} min
               </p>
             </div>
             <button
-              onClick={() => setWeekOffset((w) => w + 1)}
+              type="button"
+              disabled
               aria-label="Další týden"
-              className="grid h-8 w-8 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+              title="Vícetýdenní plánování zatím není podporováno"
+              className="grid h-8 w-8 place-items-center rounded-full text-muted-foreground disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -348,8 +347,14 @@ export function Planner() {
                   key={slot.id}
                   role="button"
                   tabIndex={0}
+                  aria-label={`${slot.label} — otevřít detail`}
                   onClick={() => setDetailSlot(slot.id)}
-                  onKeyDown={(e) => e.key === "Enter" && setDetailSlot(slot.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setDetailSlot(slot.id);
+                    }
+                  }}
                   className="flex cursor-pointer flex-col min-h-0 rounded-3xl glass-card p-3 transition-colors hover:border-primary/40"
                 >
                   <h3 className="truncate font-display text-sm font-bold">{slot.label}</h3>
@@ -401,28 +406,14 @@ export function Planner() {
         </section>
       </div>
 
-      {detail && (
-        <div
-          className="fixed inset-0 z-50 grid place-items-center bg-background/70 p-4 backdrop-blur-sm"
-          onClick={() => setDetailSlot(null)}
-        >
-          <div
-            role="dialog"
-            onClick={(e) => e.stopPropagation()}
-            className="max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-3xl glass-card p-5"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="font-display text-lg font-bold">{detail.label}</h3>
-              <button
-                onClick={() => setDetailSlot(null)}
-                aria-label="Zavřít"
-                className="grid h-8 w-8 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+      <Dialog open={!!detail} onOpenChange={(v) => !v && setDetailSlot(null)}>
+        <DialogContent className="max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-3xl glass-card p-5">
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg font-bold">{detail?.label}</DialogTitle>
+          </DialogHeader>
 
-            <div className="mt-4 space-y-4">
+          {detail && (
+            <div className="space-y-4">
               {TIERS.map((tier) => {
                 const items = itemsIn(detail.id, tier.id);
                 return (
@@ -442,15 +433,19 @@ export function Planner() {
                             {estimate(item)} min
                           </span>
                           <button
+                            type="button"
                             onClick={() => removePlacement(item.id)}
                             aria-label="Vrátit do inboxu"
+                            title="Vrátit do inboxu"
                             className="grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
                           >
                             <X className="h-3.5 w-3.5" />
                           </button>
                           <button
+                            type="button"
                             onClick={() => removeFromInbox(item.id)}
                             aria-label="Smazat záznam"
+                            title="Smazat záznam"
                             className="grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/15 hover:text-destructive"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -467,9 +462,9 @@ export function Planner() {
                 );
               })}
             </div>
-          </div>
-        </div>
-      )}
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

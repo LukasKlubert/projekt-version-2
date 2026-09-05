@@ -16,22 +16,22 @@ describe("DayRing", () => {
   it("prázdný den má jen šedý podklad", () => {
     const html = renderToStaticMarkup(<DayRing short="Po" progress={0} isToday={false} />);
     expect(html).toMatchSnapshot();
-    expect(html).toContain("stroke-gray-800");
-    expect(html).not.toContain("stroke-emerald-500");
+    expect(html).toContain("stroke-border");
+    expect(html).not.toContain("stroke-success");
   });
 
   it("částečný den má tenký smaragdový oblouk", () => {
     const html = renderToStaticMarkup(<DayRing short="St" progress={0.6} isToday={false} />);
     expect(html).toMatchSnapshot();
     expect(html).toContain('stroke-width="2.5"');
-    expect(html).toContain("stroke-emerald-500");
+    expect(html).toContain("stroke-success");
   });
 
   it("hotový den má silnější obrys a matnou výplň", () => {
     const html = renderToStaticMarkup(<DayRing short="Út" progress={1} isToday={false} />);
     expect(html).toMatchSnapshot();
     expect(html).toContain('stroke-width="4.5"');
-    expect(html).toContain("fill-emerald-900/15");
+    expect(html).toContain("fill-success/15");
   });
 
   it("dnešek má zvýrazněný text a tečku", () => {

@@ -5,27 +5,27 @@ Tento dokument je uvítací brána do systému `.cursor/`. Přečti si ho jako p
 ## 1. Struktura složek
 
 - **`.cursor/rules/`** — role továrny jako `.mdc` pravidla. Každý soubor je jedna role (COO, Architekt, Vývojář...). Podsložka `sop/` obsahuje technické standardy specifické pro tento projekt (tech stack, jazyk, testování).
-- **`.cursor/vize/`** — vizionářské, chráněné dokumenty. Určují směr celé firmy, agenti je čtou, ale needitují bez explicitního svolení CEO.
+- **`.cursor/vize/`** — vizionářské, chráněné dokumenty. Určují směr systému (proč existujeme i jak se orchestrují modely). Agenti je čtou, ale needitují bez explicitního svolení CEO.
 - **`.cursor/.notes/`** — poznámky, šablony k rozšiřování systému a historické záznamy (např. výstupy auditů).
 - **`.cursor/plans/`** — plány generované agenty v Plan módu, než se schválí a spustí.
 
 ## 2. Filozofie
 
-Celý systém se řídí [Ústava.md](vize/Ústava.md). Ve zkratce: dvě vrstvy řízení — **Vrstva 1 (Člověk)** určuje vizi, strategii a dělá rozhodnutí vyžadující lidský vkus nebo morální úsudek; **Vrstva 2 (Agenti)** exekuuje podle zadaných standardních operačních postupů (SOP) a nemá vlastní iniciativu mimo ně. Člověk už nepíše kód — pokud to dělá, systém podle Ústavy selhal.
+Celý systém se řídí [Ústava.md](vize/Ústava.md) (jak se pracuje) a [vize_byznysu.md](vize/vize_byznysu.md) (proč existujeme: svobodná komunita, ne startup). Ve zkratce: dvě vrstvy řízení — **Vrstva 1 (Člověk)** určuje vizi, strategii a dělá rozhodnutí vyžadující lidský vkus nebo morální úsudek; **Vrstva 2 (Agenti)** exekuuje podle zadaných standardních operačních postupů (SOP) a nemá vlastní iniciativu mimo ně. Člověk už nepíše kód — pokud to dělá, systém podle Ústavy selhal.
 
 ## 3. Role a jak se volají
 
 Role se vyvolávají napsáním `@nazev-souboru.mdc` do libovolného chatu. Nejde o proces běžící na pozadí — žádná role není "zapnutá" nebo "vypnutá", `.mdc` soubor je jen pravidlo, které se do daného chatu načte v okamžiku, kdy ho zmíníte. Nepotřebujete mít předtím otevřenou žádnou jinou roli.
 
-| Role | Soubor | Vyvolání | Nadřízený | Hlavní úkol | Model / Effort |
-| --- | --- | --- | --- | --- | --- |
-| COO | `rules/coo.mdc` | `@coo.mdc` | CEO | Validuje zadání proti Ústavě a vizi, překládá je do briefu pro Architekta. | Claude Sonnet 5, Thinking OFF, Medium |
-| Architekt | `rules/architekt.mdc` | `@architekt.mdc` | CEO / COO | Navrhuje technické řešení a rozkrájí ho na atomické úkoly pro Vývojáře. | Claude Sonnet 5, Thinking ON, Medium (High/Max při syntéze Komplexního auditu) |
-| Vývojář | `rules/vyvojar.mdc` | `@vyvojar.mdc` | Architekt / CEO | Píše a upravuje kód přesně podle plánu Architekta. | Cursor Grok 4.6, Thinking OFF, Medium |
-| Auditor | `rules/auditor.mdc` | `@auditor.mdc` | — | Kontroluje kód Vývojáře proti zadání Architekta před commitem. | Claude Fable 5, Thinking OFF, Medium |
-| Mentor | `rules/mentor.mdc` | `@mentor.mdc` | — | Vysvětluje CEO existující kód/plány lidskou řečí, nekóduje. | Claude Sonnet 5, Thinking OFF, Low |
-| Produktový poradce | `rules/produktovy-poradce.mdc` | `@produktovy-poradce.mdc` | COO | Proaktivně diskutuje s CEO nové nápady, po shodě je předá COO. | Claude Sonnet 5, Thinking ON, Medium |
-| Komplexní audit | `rules/komplexni-audit.mdc` | `@komplexni-audit.mdc` | — (speciální milníkový režim Auditora) | Spustí tři nezávislé subagenty (architektura, bezpečnost, konzistence) před releasem. | Claude Fable 5 (koordinátor), Thinking OFF, Medium |
+| Role               | Soubor                         | Vyvolání                  | Nadřízený                              | Hlavní úkol                                                                           | Model / Effort                                                                 |
+| ------------------ | ------------------------------ | ------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| COO                | `rules/coo.mdc`                | `@coo.mdc`                | CEO                                    | Validuje zadání proti Ústavě a vizi, překládá je do briefu pro Architekta.            | Claude Sonnet 5, Thinking OFF, Medium                                          |
+| Architekt          | `rules/architekt.mdc`          | `@architekt.mdc`          | CEO / COO                              | Navrhuje technické řešení a rozkrájí ho na atomické úkoly pro Vývojáře.               | Claude Sonnet 5, Thinking ON, Medium (High/Max při syntéze Komplexního auditu) |
+| Vývojář            | `rules/vyvojar.mdc`            | `@vyvojar.mdc`            | Architekt / CEO                        | Píše a upravuje kód přesně podle plánu Architekta.                                    | Cursor Grok 4.6, Thinking OFF, Medium                                          |
+| Auditor            | `rules/auditor.mdc`            | `@auditor.mdc`            | —                                      | Kontroluje kód Vývojáře proti zadání Architekta před commitem.                        | Claude Fable 5, Thinking OFF, Medium                                           |
+| Mentor             | `rules/mentor.mdc`             | `@mentor.mdc`             | —                                      | Vysvětluje CEO existující kód/plány lidskou řečí, nekóduje.                           | Claude Sonnet 5, Thinking OFF, Low                                             |
+| Produktový poradce | `rules/produktovy-poradce.mdc` | `@produktovy-poradce.mdc` | COO                                    | Proaktivně diskutuje s CEO nové nápady, po shodě čeká na explicitní @coo.mdc od CEO.  | Claude Sonnet 5, Thinking ON, Medium                                           |
+| Komplexní audit    | `rules/komplexni-audit.mdc`    | `@komplexni-audit.mdc`    | — (speciální milníkový režim Auditora) | Spustí tři nezávislé subagenty (architektura, bezpečnost, konzistence) před releasem. | Claude Fable 5 (koordinátor), Thinking OFF, Medium                             |
 
 ## 4. Standardní tok práce
 

@@ -9,6 +9,7 @@ import {
   applyGradeToTopic,
   findTopicById,
   updateFolderAt,
+  wasGradedToday,
   type Level,
 } from "@/components/projects/types";
 import { readProjects, writeProjects } from "@/lib/projects-storage";
@@ -43,13 +44,17 @@ export function TaskList() {
     if (inboxItem?.sourceTopicId) {
       const task = tasks.find((t) => t.id === taskId);
       if (task && !task.done) {
-        // Označujeme jako done -> zobraz modal pro hodnocení
+        const result = findTopicById(readProjects(), inboxItem.sourceTopicId);
+        if (result && wasGradedToday(result.topic)) {
+          toggleTask(taskId);
+          return;
+        }
         setGrading({
           taskId,
           topicId: inboxItem.sourceTopicId,
           topicTitle: task.title,
         });
-        return; // Neprovádíme toggle teď, počkáme na hodnocení
+        return;
       }
     }
 
@@ -223,14 +228,17 @@ export function TaskList() {
                           className="h-8 w-8 rounded-full text-muted-foreground hover:text-primary"
                           onClick={() => startTimerFor(t.title)}
                           aria-label="Spustit časovač"
+                          title="Spustit časovač"
                         >
                           <Timer className="h-4 w-4" />
                         </Button>
                         <Button
                           size="icon"
                           variant="ghost"
+                          disabled
                           className="h-8 w-8 rounded-full text-muted-foreground"
-                          aria-label="Upravit úkol"
+                          aria-label="Úprava úkolů zatím není podporována"
+                          title="Úprava úkolů zatím není podporována"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>

@@ -5,9 +5,11 @@ import {
   msUntilMidnight,
   mustProgress,
   pruneOrphanedSourceTopics,
+  rolloverToNewDay,
   todayIndex,
   validatePersisted,
   type InboxItem,
+  type Persisted,
   type Placement,
   type Task,
 } from "./app-store";
@@ -148,12 +150,139 @@ describe("computeStreak", () => {
   });
 });
 
-describe("Rollover nesplněných úkolů", () => {
-  // Poznámka: Rollover se testuje na úrovni integrace v AppStoreProvider useEffect
-  // Zde testujeme logiku, která by se v něm použila
+describe("rolloverToNewDay", () => {
+  const createPersistedState = (overrides?: Partial<Persisted>): Persisted => ({
+    tasks: [],
+    focusMinutes: 0,
+    streak: 0,
+    manual: { must: true, should: false, nice: false },
+    dailyProgress: {},
+    inbox: [],
+    placements: {},
+    lastStreakDate: null,
+    ...overrides,
+  });
+
+  it("zapíše včerejší mustProgress do dailyProgress[yesterdayKey], pokud tam ještě není a progres > 0", () => {
+    const state = createPersistedState({
+      tasks: [task("t1", "must", true)],
+      dailyProgress: {},
+    });
+    // today = 2026-08-25 (Út) -> yesterday = 2026-08-24 (Po)
+    const next = rolloverToNewDay(state, "2026-08-25");
+    expect(next.dailyProgress["2026-08-24"]).toBe(1);
+  });
+
+  it("nepřepíše existující záznam v dailyProgress[yesterdayKey]", () => {
+    const state = createPersistedState({
+      tasks: [task("t1", "must", true)],
+      dailyProgress: { "2026-08-24": 0.8 },
+    });
+    const next = rolloverToNewDay(state, "2026-08-25");
+    expect(next.dailyProgress["2026-08-24"]).toBe(0.8);
+  });
+
+  it("nezapíše do dailyProgress[yesterdayKey] když yesterdayProgress je 0", () => {
+    const state = createPersistedState({
+      tasks: [task("t1", "must", false)],
+      dailyProgress: {},
+    });
+    const next = rolloverToNewDay(state, "2026-08-25");
+    expect(next.dailyProgress["2026-08-24"]).toBeUndefined();
+  });
+
+  it("přesune nesplněné úkoly (must, should, nice) naplánované na konkrétní den do Inboxu s prefixem 🔴 NESPLNĚNO: a smaže placement", () => {
+    // today = 2026-08-25 (Út), včera = 2026-08-24 (Po)
+    const state = createPersistedState({
+      inbox: [
+        { id: "1", text: "#úkol Must úkol", type: "task", createdAt: "2026-08-24T10:00:00Z" },
+        { id: "2", text: "#úkol Should úkol", type: "task", createdAt: "2026-08-24T10:00:00Z" },
+        { id: "3", text: "#nápad Nice nápad", type: "idea", createdAt: "2026-08-24T10:00:00Z" },
+        { id: "4", text: "#úkol Hotový úkol", type: "task", createdAt: "2026-08-24T10:00:00Z" },
+      ],
+      placements: {
+        "1": { slot: "Po", tier: "must", completion: {} },
+        "2": { slot: "Po", tier: "should", completion: {} },
+        "3": { slot: "Po", tier: "nice", completion: {} },
+        "4": { slot: "Po", tier: "must", completion: { "2026-08-24": true } },
+      },
+    });
+
+    const next = rolloverToNewDay(state, "2026-08-25");
+
+    expect(next.placements["1"]).toBeUndefined();
+    expect(next.placements["2"]).toBeUndefined();
+    expect(next.placements["3"]).toBeUndefined();
+    expect(next.placements["4"]).toBeDefined();
+
+    expect(next.inbox.find((i) => i.id === "1")?.text).toBe("🔴 NESPLNĚNO: #úkol Must úkol");
+    expect(next.inbox.find((i) => i.id === "2")?.text).toBe("🔴 NESPLNĚNO: #úkol Should úkol");
+    expect(next.inbox.find((i) => i.id === "3")?.text).toBe("🔴 NESPLNĚNO: #nápad Nice nápad");
+    expect(next.inbox.find((i) => i.id === "4")?.text).toBe("#úkol Hotový úkol");
+  });
+
+  it("neroluje anytime položky (placement zůstává a text se nemění)", () => {
+    const state = createPersistedState({
+      inbox: [
+        { id: "a1", text: "#úkol Kdykoliv úkol", type: "task", createdAt: "2026-08-24T10:00:00Z" },
+      ],
+      placements: {
+        a1: { slot: "anytime", tier: "must", completion: {} },
+      },
+    });
+
+    const next = rolloverToNewDay(state, "2026-08-25");
+    expect(next.placements["a1"]).toBeDefined();
+    expect(next.inbox.find((i) => i.id === "a1")?.text).toBe("#úkol Kdykoliv úkol");
+  });
+
+  it("je idempotentní při opakovaném volání se stejným today", () => {
+    const state = createPersistedState({
+      tasks: [task("t1", "must", true)],
+      inbox: [{ id: "1", text: "#úkol Test", type: "task", createdAt: "2026-08-24T10:00:00Z" }],
+      placements: {
+        "1": { slot: "Po", tier: "must", completion: {} },
+      },
+    });
+
+    const pass1 = rolloverToNewDay(state, "2026-08-25");
+    const pass2 = rolloverToNewDay(pass1, "2026-08-25");
+
+    expect(pass2).toEqual(pass1);
+    expect(pass2.inbox.find((i) => i.id === "1")?.text).toBe("🔴 NESPLNĚNO: #úkol Test");
+  });
+
+  it("propaguje streak a lastStreakDate z computeStreak", () => {
+    const state = createPersistedState({
+      dailyProgress: {
+        "2026-08-23": 1,
+        "2026-08-24": 1,
+      },
+      lastStreakDate: null,
+    });
+
+    const next = rolloverToNewDay(state, "2026-08-25");
+    expect(next.streak).toBe(2);
+    expect(next.lastStreakDate).toBe("2026-08-24");
+  });
+
+  it("správně vyhledá nesplněné úkoly až 7 dní zpět", () => {
+    // 2026-08-26 (St) -> 5 dní zpět bylo 2026-08-21 (Pá)
+    const state = createPersistedState({
+      inbox: [
+        { id: "old", text: "#úkol Páteční rest", type: "task", createdAt: "2026-08-21T10:00:00Z" },
+      ],
+      placements: {
+        old: { slot: "Pá", tier: "must", completion: {} },
+      },
+    });
+
+    const next = rolloverToNewDay(state, "2026-08-26");
+    expect(next.placements["old"]).toBeUndefined();
+    expect(next.inbox.find((i) => i.id === "old")?.text).toBe("🔴 NESPLNĚNO: #úkol Páteční rest");
+  });
 
   it("inbox položka s prefixem NESPLNĚNO by měla být spočítána v overdueCount", () => {
-    // Simulace stavu po rollover
     const inbox = [
       { id: "1", text: "🔴 NESPLNĚNO: #úkol Koupit dárky", type: "task" as const, createdAt: "" },
       { id: "2", text: "#úkol Zavolat kamarádovi", type: "task" as const, createdAt: "" },

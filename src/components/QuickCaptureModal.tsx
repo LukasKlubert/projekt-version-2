@@ -116,6 +116,7 @@ export function QuickCaptureModal({ open, onClose }: { open: boolean; onClose: (
           <textarea
             ref={textareaRef}
             value={text}
+            aria-label="Nový záznam"
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => {
               if ((e.metaKey || e.ctrlKey) && e.key === "Enter") save();
@@ -130,6 +131,8 @@ export function QuickCaptureModal({ open, onClose }: { open: boolean; onClose: (
           <div className="flex items-center gap-2">
             <button
               type="button"
+              disabled
+              title="Připravujeme"
               className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
               aria-label="Hlasový vstup"
             >
@@ -144,6 +147,7 @@ export function QuickCaptureModal({ open, onClose }: { open: boolean; onClose: (
                     key={tag.label}
                     type="button"
                     onClick={() => toggleTag(tag.value)}
+                    aria-pressed={active}
                     className={cn(
                       "rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
                       active

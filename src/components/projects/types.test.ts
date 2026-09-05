@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { applyGradeToTopic, normalizeTopic, topic } from "@/components/projects/types";
+import {
+  applyGradeToTopic,
+  normalizeTopic,
+  topic,
+  wasGradedToday,
+} from "@/components/projects/types";
 import { collectRepetitionTopics } from "@/components/planner/useRepetitionTopics";
 import { belongsInRepetitionQueue, isNewCard } from "@/lib/sm2";
 import type { Project } from "@/components/projects/types";
@@ -31,6 +36,27 @@ describe("applyGradeToTopic", () => {
     expect(reset.dueDate).toBeNull();
     expect(reset.reps).toBe(0);
     expect(belongsInRepetitionQueue(reset, "2026-08-23")).toBe(true);
+  });
+});
+
+describe("wasGradedToday", () => {
+  const today = "2026-08-23";
+
+  it("lastReviewedAt rovné dnešnímu datu → true", () => {
+    const t = { ...topic("Derivace"), lastReviewedAt: today };
+    expect(wasGradedToday(t, today)).toBe(true);
+  });
+
+  it("jiné datum → false", () => {
+    const t = { ...topic("Derivace"), lastReviewedAt: "2026-08-22" };
+    expect(wasGradedToday(t, today)).toBe(false);
+  });
+
+  it("null / chybí → false", () => {
+    const withNull = { ...topic("Derivace"), lastReviewedAt: null };
+    const missing = topic("Derivace");
+    expect(wasGradedToday(withNull, today)).toBe(false);
+    expect(wasGradedToday(missing, today)).toBe(false);
   });
 });
 

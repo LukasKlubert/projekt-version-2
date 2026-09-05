@@ -16,20 +16,25 @@ export function DayRing({
   const full = progress >= 1;
 
   return (
-    <div className="relative grid aspect-square w-full min-w-0 max-w-6 flex-1 place-items-center sm:max-w-9 md:max-w-11">
+    <div
+      role="img"
+      aria-label={`${short}: ${Math.round(progress * 100)} % splněno`}
+      className="relative grid aspect-square w-full min-w-0 max-w-6 flex-1 place-items-center sm:max-w-9 md:max-w-11"
+    >
       <svg
         viewBox="0 0 48 48"
         shapeRendering="geometricPrecision"
+        aria-hidden="true"
         className="absolute inset-0 h-full w-full -rotate-90"
       >
-        <circle cx="24" cy="24" r={r} className="fill-none stroke-gray-800" strokeWidth="3" />
-        {full && <circle cx="24" cy="24" r={12} className="fill-emerald-900/15" />}
+        <circle cx="24" cy="24" r={r} className="fill-none stroke-border" strokeWidth="3" />
+        {full && <circle cx="24" cy="24" r={12} className="fill-success/15" />}
         {progress > 0 && (
           <circle
             cx="24"
             cy="24"
             r={r}
-            className="fill-none stroke-emerald-500 transition-[stroke-dashoffset] duration-500"
+            className="fill-none stroke-success transition-[stroke-dashoffset] duration-500"
             strokeWidth={full ? "4.5" : "2.5"}
             strokeLinecap="round"
             strokeDasharray={c}
@@ -41,7 +46,7 @@ export function DayRing({
         className={cn(
           "relative text-[clamp(7px,1.5vw,12px)]",
           full
-            ? "font-semibold text-emerald-500"
+            ? "font-semibold text-success"
             : isToday
               ? "font-semibold text-foreground"
               : "font-medium text-muted-foreground",

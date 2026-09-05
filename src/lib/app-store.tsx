@@ -104,7 +104,7 @@ export type Placement = {
   completion: Record<string, boolean>;
 };
 
-type Persisted = {
+export type Persisted = {
   tasks: Task[];
   focusMinutes: number;
   streak: number;
@@ -415,6 +415,70 @@ export function plannedTasksForToday(
     }));
 }
 
+/** Přenese nesplněné úkoly z minulých dnů do Inboxu, uloží včerejší progres a přepočítá streak. */
+export function rolloverToNewDay(state: Persisted, today: string): Persisted {
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayKey = dateKey(yesterday);
+
+  // Uložit včerejší progres, pokud ještě není
+  const yesterdayProgress = mustProgress(state.tasks.filter((t) => t.tier === "must" && t.done));
+  const updatedDailyProgress =
+    state.dailyProgress[yesterdayKey] === undefined && yesterdayProgress > 0
+      ? { ...state.dailyProgress, [yesterdayKey]: yesterdayProgress }
+      : state.dailyProgress;
+
+  // Přepočítat streak
+  const { streak, lastStreakDate } = computeStreak(
+    state.lastStreakDate,
+    updatedDailyProgress,
+    today,
+  );
+
+  // Rollover: najít nesplněné úkoly z minulých dnů a vrátit je do Inboxu
+  const updatedPlacements = { ...state.placements };
+  const updatedInbox = [...state.inbox];
+  let hasRolloverChanges = false;
+
+  // Najdeme všechny dny od začátku minulého týdne do včerejška
+  const checkDate = new Date(today);
+  for (let i = 1; i <= 7; i++) {
+    checkDate.setDate(checkDate.getDate() - 1);
+    const dayKey = dateKey(checkDate);
+    const dayShort = weekDays[todayIndex(checkDate)]!.short;
+
+    // Projdeme placementy a najdeme nesplněné úkoly z tohoto dne
+    Object.entries(state.placements).forEach(([id, p]) => {
+      // Pouze úkoly naplánované na konkrétní den (ne Anytime)
+      if (p.slot !== "anytime" && p.slot === dayShort && !p.completion[dayKey]) {
+        // Najdeme úkol v inboxu
+        const inboxIdx = updatedInbox.findIndex((item) => item.id === id);
+        if (inboxIdx !== -1) {
+          // Přidáme prefix, pokud ho ještě nemá
+          const currentText = updatedInbox[inboxIdx]!.text;
+          if (!currentText.startsWith("🔴 NESPLNĚNO:")) {
+            updatedInbox[inboxIdx] = {
+              ...updatedInbox[inboxIdx]!,
+              text: `🔴 NESPLNĚNO: ${currentText}`,
+            };
+          }
+          // Odstraníme placement
+          delete updatedPlacements[id];
+          hasRolloverChanges = true;
+        }
+      }
+    });
+  }
+
+  return {
+    ...state,
+    dailyProgress: updatedDailyProgress,
+    streak,
+    lastStreakDate,
+    ...(hasRolloverChanges && { placements: updatedPlacements, inbox: updatedInbox }),
+  };
+}
+
 type Store = Persisted & {
   week: WeekDay[];
 
@@ -513,69 +577,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
   // Při změně dne: uložit včerejší progres, přepočítat streak a rollovat resty
   useEffect(() => {
     if (!hydrated) return;
-
-    setState((s) => {
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayKey = dateKey(yesterday);
-
-      // Uložit včerejší progres, pokud ještě není
-      const yesterdayProgress = mustProgress(s.tasks.filter((t) => t.tier === "must" && t.done));
-      const updatedDailyProgress =
-        s.dailyProgress[yesterdayKey] === undefined && yesterdayProgress > 0
-          ? { ...s.dailyProgress, [yesterdayKey]: yesterdayProgress }
-          : s.dailyProgress;
-
-      // Přepočítat streak
-      const { streak, lastStreakDate } = computeStreak(
-        s.lastStreakDate,
-        updatedDailyProgress,
-        today,
-      );
-
-      // Rollover: najít nesplněné úkoly z minulých dnů a vrátit je do Inboxu
-      const updatedPlacements = { ...s.placements };
-      const updatedInbox = [...s.inbox];
-      let hasRolloverChanges = false;
-
-      // Najdeme všechny dny od začátku minulého týdne do včerejška
-      const checkDate = new Date(today);
-      for (let i = 1; i <= 7; i++) {
-        checkDate.setDate(checkDate.getDate() - 1);
-        const dayKey = dateKey(checkDate);
-        const dayShort = weekDays[todayIndex(checkDate)]!.short;
-
-        // Projdeme placementy a najdeme nesplněné úkoly z tohoto dne
-        Object.entries(s.placements).forEach(([id, p]) => {
-          // Pouze úkoly naplánované na konkrétní den (ne Anytime)
-          if (p.slot !== "anytime" && p.slot === dayShort && !p.completion[dayKey]) {
-            // Najdeme úkol v inboxu
-            const inboxIdx = updatedInbox.findIndex((item) => item.id === id);
-            if (inboxIdx !== -1) {
-              // Přidáme prefix, pokud ho ještě nemá
-              const currentText = updatedInbox[inboxIdx]!.text;
-              if (!currentText.startsWith("🔴 NESPLNĚNO:")) {
-                updatedInbox[inboxIdx] = {
-                  ...updatedInbox[inboxIdx]!,
-                  text: `🔴 NESPLNĚNO: ${currentText}`,
-                };
-              }
-              // Odstraníme placement
-              delete updatedPlacements[id];
-              hasRolloverChanges = true;
-            }
-          }
-        });
-      }
-
-      return {
-        ...s,
-        dailyProgress: updatedDailyProgress,
-        streak,
-        lastStreakDate,
-        ...(hasRolloverChanges && { placements: updatedPlacements, inbox: updatedInbox }),
-      };
-    });
+    setState((s) => rolloverToNewDay(s, today));
   }, [today, hydrated]);
 
   useEffect(() => {
