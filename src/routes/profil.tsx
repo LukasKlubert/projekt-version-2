@@ -20,6 +20,10 @@ export const Route = createFileRoute("/profil")({
   component: Profil,
 });
 
+const LEVEL_BADGE_ENABLED = false; // Skryto — systém levelů v appce neexistuje, viz .cursor/plans/dotazeni_prvni_verze.plan.md
+const AI_MENTOR_ENABLED = false; // Skryto — mock AI Mentor patří do v2.0, viz plán
+const HABITS_ENABLED = false; // Skryto — návyky nemají reálná data, viz plán
+
 function Profil() {
   const { streak, focusMinutes, tasks, resetProfile } = useAppStore();
   const done = tasks.filter((t) => t.done).length;
@@ -31,9 +35,11 @@ function Profil() {
           <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[image:var(--gradient-primary)] font-display text-xl font-black text-primary-foreground">
             LK
           </div>
-          <div className="min-w-0">
+          <div className="flex min-w-0 items-center">
             <h1 className="truncate font-display text-xl font-bold">Lukáš K.</h1>
-            <p className="truncate text-sm text-muted-foreground">Level 7 · Deep Worker</p>
+            {LEVEL_BADGE_ENABLED && (
+              <p className="truncate text-sm text-muted-foreground">Level 7 · Deep Worker</p>
+            )}
           </div>
           <button
             onClick={resetProfile}
@@ -59,50 +65,60 @@ function Profil() {
           />
         </section>
 
-        <section className="rounded-3xl glass-card p-5">
-          <h2 className="flex items-center gap-2 font-display text-lg font-bold">
-            <Sparkles className="h-4 w-4 text-primary" /> AI Mentor
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Nejvíc soustředění ti drží mezi 9:00 a 11:30 — plánuj si tam nejtěžší blok. Ve středu ti
-            série klesla, protože jsi začal až večer. Zkus zítra „Must Do“ úkol hned po ránu, ještě
-            před e-maily.
+        <section className="rounded-3xl glass-card p-5 text-center">
+          <p className="text-sm text-muted-foreground">
+            Další přehledy (návyky, AI doporučení) přibudou, až pro ně appka bude mít reálná data.
           </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {["Ranní blok 90 min", "Bez telefonu do 12:00", "Večerní revize 15 min"].map((t) => (
-              <span
-                key={t}
-                className="rounded-full border border-border bg-surface-2/60 px-3 py-1.5 text-xs text-muted-foreground"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
         </section>
 
-        <section className="rounded-3xl glass-card p-5">
-          <h2 className="font-display text-lg font-bold">Návyky</h2>
-          <div className="mt-4 space-y-3">
-            {[
-              { name: "Ranní deep work", pct: 86 },
-              { name: "Čtení 20 min", pct: 54 },
-              { name: "Večerní review", pct: 71 },
-            ].map((h) => (
-              <div key={h.name}>
-                <div className="flex justify-between text-sm">
-                  <span className="truncate">{h.name}</span>
-                  <span className="text-muted-foreground">{h.pct}%</span>
+        {AI_MENTOR_ENABLED && (
+          <section className="rounded-3xl glass-card p-5">
+            <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+              <Sparkles className="h-4 w-4 text-primary" /> AI Mentor
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              Nejvíc soustředění ti drží mezi 9:00 a 11:30 — plánuj si tam nejtěžší blok. Ve středu
+              ti série klesla, protože jsi začal až večer. Zkus zítra „Must Do“ úkol hned po ránu,
+              ještě před e-maily.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {["Ranní blok 90 min", "Bez telefonu do 12:00", "Večerní revize 15 min"].map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full border border-border bg-surface-2/60 px-3 py-1.5 text-xs text-muted-foreground"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {HABITS_ENABLED && (
+          <section className="rounded-3xl glass-card p-5">
+            <h2 className="font-display text-lg font-bold">Návyky</h2>
+            <div className="mt-4 space-y-3">
+              {[
+                { name: "Ranní deep work", pct: 86 },
+                { name: "Čtení 20 min", pct: 54 },
+                { name: "Večerní review", pct: 71 },
+              ].map((h) => (
+                <div key={h.name}>
+                  <div className="flex justify-between text-sm">
+                    <span className="truncate">{h.name}</span>
+                    <span className="text-muted-foreground">{h.pct}%</span>
+                  </div>
+                  <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-surface-2">
+                    <div
+                      className="h-full rounded-full bg-success transition-all duration-700"
+                      style={{ width: `${h.pct}%`, boxShadow: "var(--glow-success)" }}
+                    />
+                  </div>
                 </div>
-                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-surface-2">
-                  <div
-                    className="h-full rounded-full bg-success transition-all duration-700"
-                    style={{ width: `${h.pct}%`, boxShadow: "var(--glow-success)" }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </AppShell>
   );

@@ -3,7 +3,7 @@
 **Status:** Aktivní ústava digitální továrny
 **Autor:** CEO / CTO (Člověk - Vrstva 1)
 
-Tento dokument definuje absolutní filozofii, podle které tato digitální továrna funguje. Jakýkoliv agent (COO, Architekt, Vývojář, Auditor) musí při své práci respektovat tyto zákony. **Proč** existujeme je v `vize_byznysu.md` (svobodná komunita, ne startup). Tahle ústava říká **jak** se pracuje.
+Tento dokument definuje absolutní filozofii, podle které tato digitální továrna funguje. Jakýkoliv agent (COO, Architekt, Vývojář, Auditor) musí při své práci respektovat tyto zákony. Tahle ústava říká **jak** se pracuje.
 
 ## 1. Dvě vrstvy řízení (Rozdělení sil)
 
@@ -47,4 +47,4 @@ Nejsem programátor. Jsem architekt systémů. Mým jediným cílem je zpevnit s
 
 ## 6. Ochrana kormidla
 
-Je přísně zakázáno jakkoliv upravovat soubory `ai-orchestrace.md`, `Ústava.md` a `vize_byznysu.md`. Tyto soubory vytvořil zakladatel a určují směr systému — smí je měnit výhradně CEO/Lukáš ručně, nebo agent s jeho explicitním svolením pro daný zásah.
+Je přísně zakázáno jakkoliv upravovat soubory `ai-orchestrace.md`, Ústava.md. Tyto soubory vytvořil zakladatel a určují směr systému — smí je měnit výhradně CEO/Lukáš ručně, nebo agent s jeho explicitním svolením pro daný zásah.

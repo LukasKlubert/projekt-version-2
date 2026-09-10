@@ -13,6 +13,5 @@ isProject: false
   - TS4111 (`noPropertyAccessFromIndexSignature`) ve `validatePersisted`
   - TS2698 (invalid spread) u `...(hasRolloverChanges && ...)`
   Nejsou blokující, `npm test`/`npm run lint` procházejí, ale build/`tsc` je hlásí. Auditor doporučil je řešit jako samostatný úklidový úkol.
-- **Zastaralý řádek v `predani-ceo.md`** (řádek ~353, kopie tabulky rolí z README): stále odkazuje na starou formulaci role Produktového poradce, protože sladění dokumentace (Kolo 5) se explicitně omezilo jen na kopii pravidla a řádek v README, ne na tuto kopii tabulky.
 
 Žádné z těchto bodů se teď neřeší — jen se zapisují, ať se neztratí, než na ně přijde čas.

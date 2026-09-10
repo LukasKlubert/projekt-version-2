@@ -1,45 +1,20 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { FileText, Globe, Image as ImageIcon, Lock, Trash2, Upload } from "lucide-react";
-
-type Doc = {
-  id: string;
-  name: string;
-  type: "pdf" | "img" | "txt";
-  size: string;
-  public: boolean;
-  tags: string[];
-};
-
-const initialDocs: Doc[] = [
-  {
-    id: "d1",
-    name: "Analyza_prednasky_1-6.pdf",
-    type: "pdf",
-    size: "3,2 MB",
-    public: false,
-    tags: ["#analýza", "#zkouška"],
-  },
-  {
-    id: "d2",
-    name: "Diagram_architektury.png",
-    type: "img",
-    size: "820 kB",
-    public: true,
-    tags: ["#architektura"],
-  },
-  {
-    id: "d3",
-    name: "Poznamky_UX_vyzkum.txt",
-    type: "txt",
-    size: "24 kB",
-    public: false,
-    tags: ["#ux"],
-  },
-];
+import { readVault, writeVault, type VaultDoc } from "@/lib/vault-storage";
 
 export function Vault() {
-  const [docs, setDocs] = useState<Doc[]>(initialDocs);
+  const [docs, setDocs] = useState<VaultDoc[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setDocs(readVault());
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    writeVault(docs);
+  }, [docs, hydrated]);
 
   const toggleVisibility = (id: string) =>
     setDocs((prev) => prev.map((d) => (d.id === id ? { ...d, public: !d.public } : d)));
@@ -68,7 +43,7 @@ export function Vault() {
                   ? "img"
                   : f.name.endsWith(".pdf")
                     ? "pdf"
-                    : "txt") as Doc["type"],
+                    : "txt") as VaultDoc["type"],
                 size: `${Math.max(1, Math.round(f.size / 1024))} kB`,
                 public: false,
                 tags: [],
@@ -110,14 +85,6 @@ export function Vault() {
             </div>
 
             <div className="flex shrink-0 items-center gap-1">
-              <Button
-                variant="outline"
-                size="sm"
-                className="hidden rounded-full text-xs sm:inline-flex"
-              >
-                Vygenerovat kartičky
-              </Button>
-
               <div className="group relative">
                 <button
                   type="button"

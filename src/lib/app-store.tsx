@@ -116,6 +116,8 @@ export type Persisted = {
   placements: Record<string, Placement>;
   /** Datum (YYYY-MM-DD) posledního dne, kdy byly splněny všechny Must Do úkoly. */
   lastStreakDate: string | null;
+  /** Vlastní časové předvolby Deep Work (minuty). */
+  customPresets: number[];
 };
 
 /** Lokální datum ve tvaru YYYY-MM-DD. */
@@ -189,6 +191,7 @@ const defaults: Persisted = {
   inbox: [],
   placements: {},
   lastStreakDate: null,
+  customPresets: [],
 };
 
 /** Kontroluje, zda objekt je validní Task. */
@@ -226,6 +229,13 @@ function isValidPlacement(p: unknown): p is Placement {
     (pl.tier === "must" || pl.tier === "should" || pl.tier === "nice") &&
     (pl.completion === undefined || typeof pl.completion === "object")
   );
+}
+
+const FIXED_PRESET_MINUTES = new Set([25, 50, 90]);
+
+/** Celé číslo v rozsahu 5–180 minut. */
+export function isValidCustomPresetMinutes(m: unknown): m is number {
+  return typeof m === "number" && Number.isInteger(m) && m >= 5 && m <= 180;
 }
 
 /** Runtime validace perzistovaného stavu s vrácením bezpečných dat. */
@@ -340,6 +350,28 @@ export function validatePersisted(raw: unknown): {
     errors.push("lastStreakDate není string ani null");
   }
 
+  let customPresets = defaults.customPresets;
+  if (Array.isArray(obj.customPresets)) {
+    const seen = new Set<number>();
+    const valid: number[] = [];
+    let dropped = 0;
+    for (const m of obj.customPresets) {
+      if (!isValidCustomPresetMinutes(m)) {
+        dropped++;
+        continue;
+      }
+      if (FIXED_PRESET_MINUTES.has(m) || seen.has(m)) continue;
+      seen.add(m);
+      valid.push(m);
+    }
+    if (dropped > 0) {
+      errors.push(`${dropped} vlastních předvoleb mělo nevalidní formát`);
+    }
+    customPresets = valid;
+  } else if (obj.customPresets !== undefined) {
+    errors.push("customPresets není pole");
+  }
+
   // Migrace placements: starý done přepíšeme na completion
   const migratedPlacements: Record<string, Placement> = {};
   for (const [key, pl] of Object.entries(placements)) {
@@ -361,6 +393,7 @@ export function validatePersisted(raw: unknown): {
       inbox,
       placements: migratedPlacements,
       lastStreakDate,
+      customPresets,
     },
     isValid: errors.length === 0,
     errors,
@@ -500,6 +533,8 @@ type Store = Persisted & {
   getInboxItem: (id: string) => InboxItem | undefined;
   /** Počet restů (položek s prefixem NESPLNĚNO) v inboxu. */
   overdueCount: number;
+  addCustomPreset: (minutes: number) => void;
+  removeCustomPreset: (minutes: number) => void;
 };
 
 const AppStoreContext = createContext<Store | null>(null);
@@ -681,6 +716,22 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     setTimerOpen(true);
   }, []);
 
+  const addCustomPreset = useCallback((minutes: number) => {
+    if (!isValidCustomPresetMinutes(minutes)) return;
+    if (FIXED_PRESET_MINUTES.has(minutes)) return;
+    setState((s) => {
+      if (s.customPresets.includes(minutes)) return s;
+      return { ...s, customPresets: [...s.customPresets, minutes] };
+    });
+  }, []);
+
+  const removeCustomPreset = useCallback((minutes: number) => {
+    setState((s) => ({
+      ...s,
+      customPresets: s.customPresets.filter((m) => m !== minutes),
+    }));
+  }, []);
+
   const getInboxItem = useCallback(
     (id: string) => {
       return state.inbox.find((i) => i.id === id);
@@ -772,6 +823,8 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     activeTaskTitle,
     startTimerFor,
     getInboxItem,
+    addCustomPreset,
+    removeCustomPreset,
   };
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;

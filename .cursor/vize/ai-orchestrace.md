@@ -17,6 +17,7 @@ Tato tabulka je základní přehled všech rolí v továrně. Když COO nabírá
 | **Claude Fable 5**   | Běžný Auditor        | Standard                                 | Rychlá kontrola kódu po Vývojáři, statická analýza, audit bezpečnosti tasku.       |
 | **Gemini 3.7 Flash** | UI / Kontext vysavač | High effort (1M kontext)                 | Čištění špagetového kódu (Lovable), CSS, sjednocování UI napříč desítkami souborů. |
 | **Claude Sonnet 5**  | Produktový poradce   | Thinking ON (Medium)                     | Proaktivní diskuze s CEO o vylepšeních a nápadech, předání shodnutých nápadů COO.  |
+| **Claude Sonnet 5**  | UX expert            | Thinking ON (Medium)                     | Konkrétní UX specifikace (rozložení, stavy, interakce, přístupnost) uvnitř smyčky, když to Architekt označí; nebo samostatný UX audit appky. |
 
 Mimo tento pool stojí **Mentor** (Claude Sonnet 5, Thinking OFF) — nekóduje, nevymýšlí architekturu, jen lidsky vysvětluje CEO, co dělá kód/architektura vytvořená ostatními rolemi. Nepočítá se do "4 zapnutých modelů", protože nepracuje s repozitářem.
 

@@ -160,6 +160,7 @@ describe("rolloverToNewDay", () => {
     inbox: [],
     placements: {},
     lastStreakDate: null,
+    customPresets: [],
     ...overrides,
   });
 
@@ -442,6 +443,30 @@ describe("validatePersisted", () => {
     const result = validatePersisted(multipleErrors);
     expect(result.isValid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(3);
+  });
+
+  it("použije prázdné pole když customPresets není pole", () => {
+    const result = validatePersisted({ customPresets: "nepole" });
+    expect(result.isValid).toBe(false);
+    expect(result.errors).toContain("customPresets není pole");
+    expect(result.state.customPresets).toEqual([]);
+  });
+
+  it("odfiltruje nevalidní položky z customPresets", () => {
+    const result = validatePersisted({ customPresets: [45, 0, 4, 181, 25.5, "60"] });
+    expect(result.isValid).toBe(false);
+    expect(result.errors).toContain("5 vlastních předvoleb mělo nevalidní formát");
+    expect(result.state.customPresets).toEqual([45]);
+  });
+
+  it("odstraní duplicity v customPresets", () => {
+    const result = validatePersisted({ customPresets: [45, 60, 45] });
+    expect(result.state.customPresets).toEqual([45, 60]);
+  });
+
+  it("vyřadí pevné předvolby 25/50/90 z customPresets", () => {
+    const result = validatePersisted({ customPresets: [25, 45, 50, 90, 60] });
+    expect(result.state.customPresets).toEqual([45, 60]);
   });
 });
 

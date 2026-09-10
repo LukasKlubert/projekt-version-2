@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import { useAppStore, type Tier } from "@/lib/app-store";
 import { cn } from "@/lib/utils";
-import { Check, ChevronDown, Clock, Pencil, Timer, Unlock } from "lucide-react";
+import { Check, ChevronDown, Clock, Unlock } from "lucide-react";
 import { GradeModal } from "@/components/planner/GradeModal";
 import {
   applyGradeToTopic,
@@ -21,15 +20,8 @@ const tiers: { id: Tier; title: string; dot: string }[] = [
 ];
 
 export function TaskList() {
-  const {
-    tasks,
-    toggleTask,
-    unlocked,
-    manualUnlock,
-    startTimerFor,
-    getInboxItem,
-    removeFromInbox,
-  } = useAppStore();
+  const { tasks, toggleTask, unlocked, manualUnlock, getInboxItem, removeFromInbox } =
+    useAppStore();
   const [open, setOpen] = useState<Partial<Record<Tier, boolean>>>({});
   const [grading, setGrading] = useState<{
     taskId: string;
@@ -199,7 +191,7 @@ export function TaskList() {
                     <li
                       key={t.id}
                       className={cn(
-                        "grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-border bg-surface-2/50 px-3 py-3 transition-all duration-300",
+                        "grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-2xl border border-border bg-surface-2/50 px-3 py-3 transition-all duration-300",
                         t.done && "opacity-55",
                       )}
                     >
@@ -220,28 +212,6 @@ export function TaskList() {
                         <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" /> {t.minutes} min
                         </p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-1">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 rounded-full text-muted-foreground hover:text-primary"
-                          onClick={() => startTimerFor(t.title)}
-                          aria-label="Spustit časovač"
-                          title="Spustit časovač"
-                        >
-                          <Timer className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          disabled
-                          className="h-8 w-8 rounded-full text-muted-foreground"
-                          aria-label="Úprava úkolů zatím není podporována"
-                          title="Úprava úkolů zatím není podporována"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
                       </div>
                     </li>
                   ))}

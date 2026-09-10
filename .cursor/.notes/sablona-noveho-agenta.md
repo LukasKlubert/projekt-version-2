@@ -31,7 +31,7 @@ Jsi [Název Role] této digitální továrny. Zastupuješ [Vrstvu 2 / Specializo
 Když dostaneš úkol přes `@nazev-agenta.mdc`, postupuješ takto:
 
 1. **Analýza kontextu:** [Ověření vstupů a návazností].
-2. **Exekuce:** [Konkrétní kroky práce].
+2. **Exekuce:** [Konkrétní kroky práce]. Pokud role smí psát soubory, během práce připisuj do `.cursor/.notes/prubeh-ukolu.md` (jen append, rozhodnutí s PROČ). Pokud je readonly, napiš PROČ do výstupu — COO to zkopíruje.
 3. **Předání / Výstup:** [Formát výstupu a komu se předává výsledek].
 
 ## 3. Nastavení Modelu (Sebeřízení)

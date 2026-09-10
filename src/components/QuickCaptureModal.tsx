@@ -3,6 +3,8 @@ import { Mic, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/lib/app-store";
 
+const VOICE_INPUT_ENABLED = false; // Skryto — hlasový vstup patří do v2.0, viz plán
+
 const TAGS = [
   { label: "#Úkol", value: "#Úkol" },
   { label: "#Nápad", value: "#Nápad" },
@@ -129,16 +131,20 @@ export function QuickCaptureModal({ open, onClose }: { open: boolean; onClose: (
 
         <div className="flex items-center justify-between gap-3 px-5 py-4">
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled
-              title="Připravujeme"
-              className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
-              aria-label="Hlasový vstup"
-            >
-              <Mic className="h-4 w-4" />
-            </button>
-            <div className="h-5 w-px bg-border" />
+            {VOICE_INPUT_ENABLED && (
+              <>
+                <button
+                  type="button"
+                  disabled
+                  title="Připravujeme"
+                  className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                  aria-label="Hlasový vstup"
+                >
+                  <Mic className="h-4 w-4" />
+                </button>
+                <div className="h-5 w-px bg-border" />
+              </>
+            )}
             <div className="flex items-center gap-1.5">
               {TAGS.map((tag) => {
                 const active = selectedTags.has(tag.value);

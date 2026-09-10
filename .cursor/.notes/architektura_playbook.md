@@ -2,13 +2,19 @@
 title: CTO playbook - jak rozšiřovat tým projektu Fokus
 author: Lukáš + CTO agent
 date: 2026-08-23
+poznámka k úklidu: >
+  Cleaner tento soubor 2026-09-08 vyčistil. Smazána byla sekce "Tým – historický stav
+  (Custom Mode / subagent éra)" a sekce "Záložní plán, kdyby Custom Mode nešel použít" —
+  obě popisovaly stav týmu z doby před `99d7361`, který dvakrát zastaral: nejdřív ho
+  nahradily `.mdc` pravidla, pak COO reálně začal volat skutečné subagenty v
+  `.cursor/agents/` (architekt, auditor, vyvojar, vyvojar-velky-kontext, ux-expert) přes
+  Task nástroj (viz `coo.mdc` sekce 1 a 4). Ponechání obou sekcí by čtenáře matlo, že
+  subagenty se "aktuálně nepoužívají" — opak je pravda. Smazán byl i zastaralý seznam
+  konkrétních model slugů (nahrazují ho živá čísla v `ai-orchestrace.md`) a dva mrtvé
+  odkazy na neexistující `agent-specializace.md`.
 ---
 
-# CTO playbook
-
 "POZNÁMKA PRO AGENTY: Tento dokument obsahuje technické a architektonické standardy naší továrny. V případě jakéhokoliv rozporu je nadřazeným a absolutním dokumentem Ústava.md."
-
-> **ARCHIVNÍ POZNÁMKA (2026-08-25):** Restrukturalizace (commit `99d7361 restrukturalizace firmy`) nahradila tým Custom Mode skillů + subagenta Vývojáře (sekce 1 níže) pěti pravidly v `.cursor/rules/` (`coo.mdc`, `architekt.mdc`, `vyvojar.mdc`, `auditor.mdc`, `mentor.mdc`). Role COO a CTO byly sloučeny/přejmenovány na COO. Sekce 1, 6 a 10 popisují **starý, už neplatný stav** — ponechány jako historický záznam rozhodnutí a jako záložní plán, kdyby se k mechanismu Custom Mode/subagent bylo potřeba vrátit. Sekce 2–5, 7–9 (obecná fakta o mechanismech Cursoru a mapa projektu Fokus) zůstávají platné.
 
 > **Komu je určeno:** dalšímu CTO/koordinačnímu chatu, který převezme projekt Fokus poté, co předchozímu dojde kontext.
 >
@@ -16,51 +22,30 @@ date: 2026-08-23
 
 ---
 
-## 1. Tým – historický stav (Custom Mode / subagent éra, do commitu `99d7361`)
-
-> Tato tabulka už neodpovídá realitě — viz archivní poznámka nahoře. Aktuální tým: `coo.mdc`, `architekt.mdc`, `vyvojar.mdc`, `auditor.mdc`, `mentor.mdc` v `.cursor/rules/`, vyvolání přes `@nazev.mdc`. Žádné skilly v `.cursor/skills/` pro role, žádný subagent Vývojáře v `.cursor/agents/`.
-
-| Role      | Mechanismus         | Soubor                              | Vyvolání                   | Model                                                 |
-| --------- | ------------------- | ----------------------------------- | -------------------------- | ----------------------------------------------------- |
-| Architekt | Custom Mode (skill) | `.cursor/skills/architekt/SKILL.md` | `/architekt` + `Alt+Enter` | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
-| Vývojář   | subagent            | `.cursor/agents/vyvojar.md`         | `/vyvojar`                 | pinnuto `claude-4.5-sonnet-thinking`                  |
-| Auditor   | Custom Mode (skill) | `.cursor/skills/auditor/SKILL.md`   | `/auditor` + `Alt+Enter`   | ruční výběr, doporučeno `gpt-5.6-sol-medium`          |
-| CTO       | Custom Mode (skill) | `.cursor/skills/cto/SKILL.md`       | `/cto` + `Alt+Enter`       | ruční výběr, doporučeno `claude-opus-5-thinking-high` |
-
-Plus tři workflow skills (`novy-ukol`, `pred-commitem`, `audit`) a pět pravidel v `.cursor/rules/`.
-
-**Změna modelu u Auditora (2026-08-23):** Přepnut z Opus na GPT Sol. GPT je silný na analytiku, logiku a edge cases, což přesně sedí na kontrolu SM-2 výpočtů a strict TypeScriptu. Křížová kontrola mezi rodinami modelů (Vývojář Sonnet, Auditor GPT) je cennější než to, že by oba byli na nejvyšším modelu. Pro kritické audity přidán skill `/audit`, který systematicky používá všechny tři modely včetně Opus.
-
-**Poznámka k názvům:** role se v textu jmenují česky (Vývojář, Auditor), ale slugy jsou bez diakritiky (`vyvojar`, `auditor`), protože `name` má být podle dokumentace malá písmena a pomlčky. Role byly přejmenované 2026-08-23 z původních `impl` a `reviewer` na Lukášovo přání.
-
----
-
-## 2. Zaznamenaná rozhodnutí a jejich důvody
+## 1. Zaznamenaná rozhodnutí a jejich důvody
 
 Nerozbíjej je bez důvodu. Každé z nich vzniklo z konkrétní úvahy, která se z výsledku sama nepozná.
 
-**Vývojář dělá UI i logiku v jedné roli.** Původní návrh měl dva agenty (`ui-designer`, `logika-tester`). Sloučeny záměrně: featury v tomhle projektu skoro vždy sahají do obojího současně (export = tlačítko + generování; statistika = výpočet + zobrazení). Dva agenti se sdíleným checkoutem by se museli koordinovat a mohou si přepsat práci.
+**Vývojář dělá UI i logiku v jedné roli.** Featury v tomhle projektu skoro vždy sahají do obojího současně (export = tlačítko + generování; statistika = výpočet + zobrazení). Dva agenti se sdíleným checkoutem by se museli koordinovat a mohou si přepsat práci.
 
-**Architekt, Auditor a CTO jsou Custom Modes, ne subagenti.** Všechny tři role těží z dlouhého vlastního chatu, kde se rozhodnutí a připomínky vrství. Architekt má držet nit („kam patří stav" má platit i pro navazující featury), Auditor má poznat vracející se chybu, CTO má pamatovat, proč tým vypadá, jak vypadá. Subagent volaný přes `/` startuje pokaždé s čistým kontextem.
+**Auditor má jiný model než Vývojář.** Kdo kontroluje na stejném modelu jako autor, má stejná slepá místa — křížová kontrola mezi rodinami modelů odhalí víc. Pro opravdu kritické věci (migrace schématu, velký refaktor) je `komplexni-audit.mdc`, který systematicky používá tři modely od tří různých firem.
 
-**Auditor má jiný model než Vývojář.** Kdo kontroluje na stejném modelu jako autor, má stejná slepá místa. Vývojář běží na Sonnetu, Auditor na GPT Sol — křížová kontrola mezi rodinami modelů. GPT je silný na analytiku a edge cases, což sedí na kontrolu výpočtů a strict TypeScriptu. Pro opravdu kritické věci (migrace schématu, velký refaktor) je skill `/audit`, který systematicky používá všechny tři modely včetně Opus.
+**Architekt, Vývojář a Auditor nepíšou/nemažou nic mimo svou kompetenci.** U subagentů (`.cursor/agents/`) je `readonly: true` technické vynucení (Auditor, UX expert); u ostatních rolí je to jen instrukce v promptu.
 
-**Architekt, Auditor ani CTO nepíšou aplikační kód.** Vynucené promptem, ne technicky. U subagenta by šlo použít `readonly: true`; u Custom Mode takové pole neexistuje, takže je to jen instrukce v promptu. CTO smí editovat `.cursor/` a `.notes/`, protože to je přesně jeho práce.
+**Role definujeme podle práce, model přiřazujeme až potom.** Opačný postup (jedna role na každý dostupný model) vyrobí role, které se nikdy nepoužijí.
 
-**Role definujeme podle práce, model přiřazujeme až potom.** Opačný postup (jedna role na každý dostupný model) vyrobí role, které se nikdy nepoužijí. Viz `agent-specializace.md` — ta tabulka je referenční přehled modelů, ne návrh týmu.
-
-**Tým je záměrně malý.** Dokumentace Cursoru doporučuje začít se dvěma až třemi rolemi a přidávat jen při jasném novém use case; jako anti-pattern uvádí „50+ subagentů s vágními instrukcemi". Přínos subagenta je izolace kontextu, ne rychlost — u jednoduchých úloh je hlavní agent rychlejší, a pět paralelních subagentů spotřebuje zhruba pětinásobek tokenů.
+**Tým je záměrně malý.** Dokumentace Cursoru doporučuje začít se dvěma až třemi rolemi a přidávat jen při jasném novém use case; jako anti-pattern uvádí „50+ subagentů s vágními instrukcemi". Přínos subagenta je izolace kontextu, ne rychlost — u jednoduchých úloh je hlavní agent rychlejší, a víc paralelních subagentů spotřebuje výrazně víc tokenů.
 
 ---
 
-## 3. Ověřená fakta o mechanismech Cursoru
+## 2. Ověřená fakta o mechanismech Cursoru
 
 ### Subagent — `.cursor/agents/<name>.md`
 
 Markdown s YAML frontmatterem, tělo je systémový prompt. Všechna pole jsou nepovinná.
 
 | Pole            | Typ     | Default         | Význam                                                |
-| --------------- | ------- | --------------- | ----------------------------------------------------- |
+| --------------- | ------- | --------------- | ------------------------------------------------------ |
 | `name`          | string  | z názvu souboru | identifikátor, lowercase s pomlčkami                  |
 | `description`   | string  | —               | podle tohohle se agent rozhoduje o delegaci           |
 | `model`         | string  | `inherit`       | `inherit` nebo konkrétní model ID                     |
@@ -69,7 +54,7 @@ Markdown s YAML frontmatterem, tělo je systémový prompt. Všechna pole jsou n
 
 Umístění: `.cursor/agents/` (projekt), `~/.cursor/agents/` (uživatel). Kompatibilní i `.claude/agents/` a `.codex/agents/`. Projektoví mají přednost před uživatelskými, `.cursor/` vyhrává nad `.claude/` a `.codex/`.
 
-Vyvolání trojí: automaticky podle `description`, explicitně přes `/name`, nebo přirozeným jazykem („použij subagenta X").
+Vyvolání trojí: automaticky podle `description`, explicitně přes `/name`, nebo přirozeným jazykem („použij subagenta X"), nebo — jak to dělá tenhle projekt — voláním Task nástroje z `coo.mdc`.
 
 Zanoření: hlavní agent a jeho přímí subagenti smějí spustit další subagenty, ale subagent spuštěný subagentem už ne. Tedy jedna úroveň.
 
@@ -80,7 +65,7 @@ Dostupné v editoru, CLI i cloud agentech.
 Složka s `SKILL.md`. Název složky **musí** odpovídat poli `name`.
 
 | Pole                       | Povinné | Význam                                                                                                        |
-| -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------- |
+| --------------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
 | `name`                     | ano     | lowercase, čísla, pomlčky; shoduje se s názvem složky                                                         |
 | `description`              | ano     | podle toho agent určuje relevanci                                                                             |
 | `paths`                    | ne      | globy, na které se skill scopuje (čárkami oddělený string nebo YAML seznam)                                   |
@@ -110,7 +95,7 @@ Legacy pole `globs` se stále akceptuje jako fallback za `paths`, ale nové skil
 **Přípona musí být `.mdc`.** Obyčejný `.md` v téhle složce se ignoruje.
 
 | `alwaysApply` | `description` | `globs` | Chování                                                      |
-| ------------- | ------------- | ------- | ------------------------------------------------------------ |
+| ------------- | ------------- | ------- | -------------------------------------------------------------- |
 | `true`        | —             | —       | vždy v kontextu, ostatní pole se ignorují                    |
 | `false`       | —             | zadáno  | auto-attach, když je v kontextu odpovídající soubor          |
 | `false`       | zadáno        | —       | agent si pravidlo vytáhne, když ho vyhodnotí jako relevantní |
@@ -119,6 +104,8 @@ Legacy pole `globs` se stále akceptuje jako fallback za `paths`, ale nové skil
 `globs` se oddělují čárkami. Doporučená velikost pod 500 řádků. Precedence: Team → Project → User.
 
 Pravidla neovlivňují Cursor Tab; User Rules se neaplikují na Inline Edit.
+
+Frontmatter musí být **jeden platný YAML blok** (`alwaysApply`, `description`, `globs` v jednom `---...---`), ne dva zřetězené bloky — tuhle chybu měla v srpnu 2026 všech pět původních pravidel, oprava viz `.cursor/.notes/sablona-noveho-agenta.md`.
 
 ### Hooks — `.cursor/hooks.json`
 
@@ -136,41 +123,23 @@ Na Windows je enterprise cesta `C:\ProgramData\Cursor\hooks.json`.
 
 ---
 
-## 4. Co dokumentace NEUVÁDÍ
+## 3. Co dokumentace NEUVÁDÍ
 
 Tohle je hlavní důvod existence tohoto dokumentu. Neodvozuj z toho závěry a nevymýšlej si — pokud něco z toho potřebuješ, ověř to experimentem a výsledek sem zapiš.
 
 - **Subagenti nemají pole `tools`.** Allowlist ani denylist nástrojů na úrovni subagenta neexistuje. Subagenti dědí všechny nástroje od rodiče včetně MCP. Jediný přepínač je hrubé `readonly: true`. Granulární omezení jde jen přes hooks (`preToolUse`, `subagentStart`) nebo CLI permissions.
 - **Subagenti nemají `icon` ani `color`.** Ta pole patří skillům.
-- **Skills nemají pole `model`.** Custom Mode tedy nedokáže model vynutit — uživatel si ho vybírá v pickeru. Proto je u Architekta, Auditora a CTO doporučený model napsaný v těle skillu jako poznámka.
+- **Skills nemají pole `model`.** Custom Mode tedy nedokáže model vynutit — uživatel si ho vybírá v pickeru.
 - **Cesta `.cursor/commands/`** se v aktuální dokumentaci nevyskytuje. Dokumentovaná je jen složka `commands/` uvnitř pluginu. Pro nová workflow piš skill, případně s `disable-model-invocation: true`, což dá stejné chování jako starý slash command.
 - **Argumenty u commandů** (`$ARGUMENTS`) — nedokumentováno. U prompt-based hooků `$ARGUMENTS` dokumentované je, ale to je jiný mechanismus.
-- **Kanonická tabulka model ID** se nepublikuje. Dokumentace uvádí jen příklady a formát s parametry v hranatých závorkách: `claude-opus-5[effort=high]`, `claude-opus-5[context=300k]`, `composer-2.5[fast=false]`. Sada parametrů se liší podle modelu.
-
-### Model slugy použitelné v tomto prostředí
-
-Ověřeno v době psaní (`inherit` je default):
-
-```
-claude-4.5-sonnet-thinking
-claude-opus-5-thinking-high
-composer-2.5-fast
-cursor-grok-4.5-high-fast
-cursor-grok-4.6-medium
-gemini-3-flash
-gemini-3.6-flash-high
-gpt-5.4-mini-medium
-gpt-5.6-sol-medium
-```
-
-Popis silných stránek jednotlivých modelů je v `agent-specializace.md`.
+- **Kanonická tabulka model ID** se nepublikuje. Dokumentace uvádí jen příklady a formát s parametry v hranatých závorkách: `claude-opus-5[effort=high]`, `claude-opus-5[context=300k]`, `composer-2.5[fast=false]`. Sada parametrů se liší podle modelu. Aktuální seznam modelů, které tenhle tým skutečně používá, je jen v `.cursor/vize/ai-orchestrace.md` — neopisuj ho sem, mění se.
 
 ---
 
-## 5. Kdy co použít
+## 4. Kdy co použít
 
 | Potřeba                                                                 | Mechanismus                                                |
-| ----------------------------------------------------------------------- | ---------------------------------------------------------- |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------ |
 | Role potřebuje izolovaný kontext, pinnutý model, případně běh na pozadí | **subagent** v `.cursor/agents/`                           |
 | Role potřebuje dlouhý vlastní chat, kde se rozhodnutí vrství            | **Custom Mode** (skill s `disable-model-invocation: true`) |
 | Opakovatelný postup na pár kroků, žádná role                            | **skill** bez `disable-model-invocation`                   |
@@ -181,15 +150,13 @@ Dokumentace k tomu dodává: pokud zakládáš subagenta na jednoúčelovou věc
 
 ---
 
-## 6. Šablona: nový subagent (mechanismus se aktuálně nepoužívá, viz sekce 1)
-
-> Aktuální tým žádného z těchto dvou mechanismů nevyužívá — nové role se přidávají jako `.mdc` pravidlo (šablona v `.cursor/.notes/sablona-noveho-agenta.md`). Tahle šablona zůstává jako referenční postup pro budoucnost, kdyby role potřebovala vynucený model nebo izolovaný kontext (viz sekce 10).
+## 5. Šablona: nový subagent
 
 ```markdown
 ---
 name: nazev-role
 description: Jedna věta co dělá. Použij ho, když <konkrétní situace>.
-model: claude-4.5-sonnet-thinking
+model: claude-sonnet-5
 ---
 
 Jsi <role> projektu Fokus — studijní „deep work" aplikace na TanStack Start, React 19 a Tailwindu v4.
@@ -234,19 +201,19 @@ Název složky se musí shodovat s `name`.
 
 ---
 
-## 7. Kontrolní seznam pro přidání specialisty
+## 6. Kontrolní seznam pro přidání specialisty
 
 1. **Ověř, že role opravdu chybí.** Nepřidávej roli, kterou zvládne existující agent s lepším zadáním. Malý tým s ostrými hranicemi funguje líp než široký.
-2. **Rozhodni mechanismus** podle tabulky v sekci 5.
+2. **Rozhodni mechanismus** podle tabulky v sekci 4.
 3. **Vytvoř soubor** podle šablony. Prompt drž krátký; obecné konvence projektu do něj nekopíruj, ty už jsou v `.cursor/rules/`.
-4. **Ověř vyvolání.** U subagenta zkus `/nazev` a zkontroluj, že se chová podle role a že se aplikoval zvolený model. U Custom Mode zkontroluj, že se objeví v nabídce po `Alt+Enter`. Pokud se slug modelu neaplikuje, oprav ho a **zapiš správný tvar do sekce 4** tohoto dokumentu.
-5. **Zapiš roli** do tabulky v sekci 1 a do `jak-pouzivat-tym.md`.
-6. **Zdůvodni to** v sekci 2, pokud jde o netriviální volbu. Rozhodnutí bez důvodu příští CTO rozbije.
+4. **Ověř vyvolání.** U subagenta zkus `/nazev` a zkontroluj, že se chová podle role a že se aplikoval zvolený model. U Custom Mode zkontroluj, že se objeví v nabídce po `Alt+Enter`. Pokud se slug modelu neaplikuje, oprav ho.
+5. **Zapiš roli** do tabulky v `README.md` a (u nové modelové role) do `ai-orchestrace.md` sekce 1 — postup je popsaný v `coo.mdc` sekci 5.
+6. **Zdůvodni to** v sekci 1 tohoto souboru, pokud jde o netriviální volbu. Rozhodnutí bez důvodu příští CTO rozbije.
 7. **Commitni** `.cursor/` i `.notes/` společně.
 
 ---
 
-## 8. Mapa projektu Fokus
+## 7. Mapa projektu Fokus
 
 Studijní „deep work OS" pro jednoho uživatele. Bez backendu a databáze, veškerá data v localStorage.
 
@@ -272,26 +239,13 @@ src/routeTree.gen.ts         generovaný, needitovat
 
 **Známá nekonzistence:** `StreakHeader.tsx` používá natvrdo psané barvy (`stroke-emerald-500`, `stroke-gray-800`) místo sémantických tokenů. Pravidlo `ui-komponenty.mdc` to označuje za pozůstatek, ne vzor.
 
-**Git:** repozitář byl založen lokálně 2026-08-23, initní commit `05e4a6b`. Tenhle adresář **není** naklonovaný Lovable repozitář, takže se s Lovable nesynchronizuje — je to lokální záchranná síť. Pokud bude potřeba skutečný sync, je nutné naklonovat propojený repozitář a pracovat v něm.
+**Git:** repozitář byl založen lokálně 2026-08-23, initní commit `05e4a6b`. Ověř před spoléháním na tenhle odstavec, jestli se mezitím nezměnilo napojení na Lovable repozitář.
 
 ---
 
-## 9. Rozšíření, o kterých se uvažovalo a zatím se neudělala
+## 8. Rozšíření, o kterých se uvažovalo a zatím se neudělala
 
-- **Automatická delegace.** Cursor umí nechat hlavního agenta vybrat subagenta podle `description`. Tenhle tým to nevyužívá, protože s jediným subagentem je explicitní `/vyvojar` přehlednější. Až subagentů přibude, dobře napsané `description` znamená, že si uživatel nemusí pamatovat, koho volat.
+- **Automatická delegace.** Cursor umí nechat hlavního agenta vybrat subagenta podle `description`. Dobře napsané `description` znamená, že si CEO nemusí pamatovat, koho přesně volat.
 - **Skill na migraci schématu localStorage.** Odloženo, dokud první migrace reálně nenastane. Až přijde, patří sem postup: zvýšit verzi klíče, napsat migrační funkci, otestovat ji na starých datech, ošetřit poškozený JSON.
 - **Hooks na automatický lint a test po editaci.** Uživatel je zatím nechtěl. Šlo by přes `afterFileEdit`.
 - **Izolované worktree pro subagenty.** Cursor umí dát subagentovi vlastní git worktree. Zajímavé, až by běželo víc implementátorů paralelně; při jednom je to zbytečná režie.
-
-## 10. Záložní plán, kdyby Custom Mode nešel použít (historický — nahrazeno rules, ne subagenty)
-
-> Realita po `99d7361` je jiná, než tento plán předpokládal: tým se nepřeklopil na subagenty, ale na `.cursor/rules/*.mdc` pravidla vyvolávaná přes `@mention`. Ponecháno jako referenci pro úvahu, kdyby v budoucnu byl potřeba vynucený `model` nebo `readonly: true`, které pravidla neumí.
-
-Pokud by se Architekt, Auditor nebo CTO nedali v daném prostředí spustit jako režim, dají se překlopit na subagenty do `.cursor/agents/`. Získá se tím dvojí:
-
-- **`model` se dá vynutit** (`claude-opus-5-thinking-high`), takže se nemusí vybírat ručně
-- **`readonly: true`** technicky zabrání editaci souborů, místo aby to byla jen instrukce v promptu
-
-Cena za to je ztráta kontinuity: subagent startuje s čistým kontextem a nevidí předchozí konverzaci. Architekt by tedy nedržel nit mezi featurami a Auditor by nepoznal vracející se chybu — což byl původní důvod, proč jsou to Custom Modes. Subagenta lze obnovit přes jeho agent ID, ale to je manuální krok, ne plynulý chat.
-
-Rozhodovat se tedy podle toho, co víc chybí: vynucený model, nebo návaznost.

@@ -20,12 +20,13 @@ Chráníš systém, hlídáš proces a **řídíš automatickou produkční smy�
 
 ### Situace A: Nové zadání (od Produktového poradce nebo přímo od CEO)
 
-1. **Validace:** Zkontroluj zadání proti `Ústava.md` a `vize_byznysu.md`.
+1. **Validace:** Zkontroluj zadání proti `Ústava.md`.
 2. **Kontrola locku:** Přečti `.cursor/.notes/aktivni-ukol.md`.
    - Pokud Status ≠ `VOLNO` → STOP. Řekni CEO: *"Už běží úkol: [zadání z locku]. Nejdřív ho dokonči, než spustím nový."* Konec.
    - Pokud Status = `VOLNO` → pokračuj.
 3. **Zapiš lock:** Nastav Status `BĚŽÍ`, zadání, čas, kolo 0.
-4. **Spusť smyčku** (viz sekce 4).
+4. **Resetuj průběžný log:** Přepiš `.cursor/.notes/prubeh-ukolu.md` na výchozí stav — hlavička + `## Log` s řádkem `Úkol: [zadání]` + prázdná `## Shrnutí`. Ať v něm nezůstane log starého úkolu.
+5. **Spusť smyčku** (viz sekce 4).
 
 ### Situace B: Vyvolán kvůli reportu nové role (jiný chat, jiný `aktivni-ukol.md`, stejný soubor napříč projektem)
 
@@ -33,6 +34,16 @@ Chráníš systém, hlídáš proces a **řídíš automatickou produkční smy�
 2. Postupuj podle sekce 5 (Nábor).
 3. Po vytvoření role: aktualizuj `.cursor/.notes/aktivni-ukol.md` — Status `ROLE_VYTVOŘENA`, poznámka s názvem nové role.
 4. Řekni CEO: *"Role [název] vytvořena. Vrať se do původního chatu a napiš 'pokračuj'."*
+
+### Situace C: Samostatný UX audit (CEO chce jen "tady by to chtělo líp", bez zásahu do kódu)
+
+Tohle NEJDE přes plnou produkční smyčku (sekce 4) — nepotřebuje Architekta/Vývojáře/Auditora ani zámek, protože nic nemění v kódu, jen vrací report.
+
+1. Nekontroluj a nezapisuj `aktivni-ukol.md` — čistě čtecí úkol, souběh nehrozí.
+2. Zeptej se (pokud to CEO neřekl) na rozsah: konkrétní obrazovka/oblast, nebo celá appka.
+3. Task → `ux-expert` (Režim B, viz `.cursor/agents/ux-expert.md`), zadání = rozsah auditu.
+4. Vrať CEO report od UX experta beze změny — nic k němu nedodáváš, sám nerozhoduješ, co se implementuje.
+5. Pokud CEO chce z nálezů report něco reálně udělat: to už je nové zadání → Situace A (validace, lock, plná smyčka).
 
 ## 3. Nastavení Modelu
 
@@ -43,7 +54,16 @@ Chráníš systém, hlídáš proces a **řídíš automatickou produkční smy�
 
 ## 4. Produkční smyčka (jádro automatizace)
 
-Voláš nástroj na spouštění subagentů (Task) — Architekt, Vývojář (dvě varianty) a Auditor jsou definovaní v `.cursor/agents/architekt.md`, `.cursor/agents/vyvojar.md`, `.cursor/agents/vyvojar-velky-kontext.md`, `.cursor/agents/auditor.md`.
+Voláš nástroj na spouštění subagentů (Task) — Architekt, UX expert, Vývojář (dvě varianty) a Auditor jsou definovaní v `.cursor/agents/architekt.md`, `.cursor/agents/ux-expert.md`, `.cursor/agents/vyvojar.md`, `.cursor/agents/vyvojar-velky-kontext.md`, `.cursor/agents/auditor.md`.
+
+**Průběžný log — dělej to u KAŽDÉHO volání subagenta v krocích níže.**
+CEO sedí u `.cursor/.notes/prubeh-ukolu.md` a z něj má vidět černou skříňku: kdo teď běží, co rozhodl a PROČ. Nečekej na finální shrnutí.
+
+- Před `Task →` připiš `### HH:MM COO → [role] (start)` + jednou větou zadání/důvod.
+- Do promptu subagenta vždy přidej větu: *„Povinně průběžně zapisuj do `.cursor/.notes/prubeh-ukolu.md` (jen append, formát v hlavičce souboru). Každé rozhodnutí s PROČ.“* U readonly rolí (Auditor, UX expert) místo toho: *„Soubory needituješ. Do výstupu napiš 2–3 věty PROČ u klíčových rozhodnutí — COO to přepíše do logu.“*
+- Po návratu připiš `### HH:MM [role] (konec)` + 1–2 věty, co vrátil a proč (u Auditora/UX zkopíruj jejich PROČ z výstupu).
+- Architekt a oba Vývojáři si mezitím připisují mezikroky sami. Jejich položky nemaž, jen k nim přidávej svoje start/konec rámování.
+- Po SCHVÁLENO (nebo zablokování) připiš sekci `## Shrnutí` (3–6 vět: co se změnilo, kolik kol Auditor, verdikt). Log se NEmaže — smaže ho až reset na začátku dalšího úkolu.
 
 ```
 Krok 1: Task → architekt (zadání = validované shrnutí od CEO/Poradce)
@@ -59,9 +79,17 @@ Krok 1: Task → architekt (zadání = validované shrnutí od CEO/Poradce)
     - STOP. Tento chat teď nic nedělá, dokud CEO nenapíše "pokračuj".
     - Po "pokračuj": ověř v aktivni-ukol.md Status ROLE_VYTVOŘENA, vrať se na Krok 1.
 
+Krok 1b: Pokud plán obsahuje "Doporučen UX review: ANO":
+  - Task → ux-expert (zadání = plán od Architekta)
+  → UX expert vrátí konkrétní UX specifikaci (Režim A, viz ux-expert.md)
+  - Připoj UX specifikaci k plánu jako další sekci. Tenhle rozšířený plán
+    (Architekt + UX expert) jde dál do Kroku 2 místo samotného plánu Architekta.
+  Pokud "Doporučen UX review: NE" → přeskoč rovnou na Krok 2.
+
 Krok 2: Podle "Doporučeného stupně" v plánu Architekta vyber subagenta:
   - Stupeň A → Task → vyvojar (Grok, běžný rozsah)
   - Stupeň B → Task → vyvojar-velky-kontext (Gemini, velký kontext)
+  Zadání pro Vývojáře = plán (případně rozšířený o UX specifikaci z Kroku 1b).
 
   → Vývojář vrátí jedno ze dvou:
     (a) shrnutí provedených změn (diffy) → jdi na Krok 3
@@ -69,6 +97,7 @@ Krok 2: Podle "Doporučeného stupně" v plánu Architekta vyber subagenta:
 
   Pokud (b):
     - Nastav v aktivni-ukol.md Status: ZABLOKOVÁNO_ESKALACE, poznámka = text deadlocku.
+    - Připiš ## Shrnutí do prubeh-ukolu.md (kde to spadlo a proč).
     - Řekni CEO přesně to, co Vývojář vrátil, a zeptej se, jestli se má
       úkol vrátit Architektovi k přeplánování, nebo řešit jinak.
     - STOP. Čekej na pokyn CEO.
@@ -77,6 +106,7 @@ Krok 3: Task → auditor (zadání = plán + shrnutí změn od Vývojáře)
   → Auditor vrátí verdikt: "SCHVÁLENO" nebo "ZAMÍTNUTO: [důvody]"
 
   Pokud SCHVÁLENO:
+    - Připiš do prubeh-ukolu.md sekci ## Shrnutí (3–6 vět). Log nemaž.
     - Vyčisti aktivni-ukol.md do výchozího stavu: Status VOLNO, Zadání "—",
       Aktuální krok "—", Kolo "0/5", Spuštěno "—", Poznámka "—"
       (ne jen přepsat Status — celý soubor se má vrátit na start, ať
@@ -86,17 +116,21 @@ Krok 3: Task → auditor (zadání = plán + shrnutí změn od Vývojáře)
   Pokud ZAMÍTNUTO:
     - Zvyš kolo v aktivni-ukol.md o 1
     - Pokud kolo ≤ 5: vrať se na Krok 2, Vývojáři předej důvody zamítnutí
-    - Pokud kolo > 5: nastav Status ZABLOKOVÁNO_MAX_KOL, řekni CEO přesně
+    - Pokud kolo > 5: nastav Status ZABLOKOVÁNO_MAX_KOL, připiš ## Shrnutí
+      do prubeh-ukolu.md (co zbylo, proč se to zaseklo), řekni CEO přesně
       jaké chyby zůstávají a čekej na jeho rozhodnutí. STOP.
 
 Krok 4: Explicitní předání Mentorovi (čekáš na CEO).
   Napiš: "Úkol schválen a hotov. Než pokračuješ, přepni model na
   Claude Sonnet 5, Thinking OFF, Effort Low (nastavení Mentora).
-  Pak napiš @mentor.mdc — shrne ti lidsky, co se změnilo."
+  Pak napiš @mentor.mdc — shrne ti lidsky, co se změnilo.
+  Průběh i shrnutí jsou v .cursor/.notes/prubeh-ukolu.md."
   Dál nic neděláš.
 ```
 
 ## 5. Nábor nových agentů a údržba systému
+
+Údržba SOP existujících rolí (zpřesnění instrukcí, logování, šablony) je práce COO — nejde přes produkční smyčku, lock se kvůli ní nespouští. Nová role ano:
 
 Když CEO požádá o novou roli (přímo, nebo přes report z produkční smyčky):
 

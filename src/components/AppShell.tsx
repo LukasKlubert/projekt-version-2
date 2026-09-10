@@ -13,6 +13,8 @@ const items = [
   { to: "/profil", label: "Profil", icon: User, disabled: false },
 ] as const;
 
+const DAILY_GOAL_WIDGET_ENABLED = false; // Skryto — bez reálného nastavitelného cíle, viz plán (v1.5)
+
 export function AppShell({ children }: { children: ReactNode }) {
   const hydrated = useHydrated();
   return (
@@ -31,10 +33,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         {items.map((item) => (
           <NavItem key={item.to} {...item} variant="side" />
         ))}
-        <div className="mt-auto rounded-2xl border border-border bg-surface-2/60 p-4">
-          <p className="text-xs text-muted-foreground">Dnešní cíl</p>
-          <p className="mt-1 font-display text-lg font-bold">3 hodiny deep work</p>
-        </div>
+        {DAILY_GOAL_WIDGET_ENABLED && (
+          <div className="mt-auto rounded-2xl border border-border bg-surface-2/60 p-4">
+            <p className="text-xs text-muted-foreground">Dnešní cíl</p>
+            <p className="mt-1 font-display text-lg font-bold">3 hodiny deep work</p>
+          </div>
+        )}
       </aside>
 
       <main className="mx-auto w-full max-w-5xl px-4 pt-6 pb-28 md:px-8 md:pt-10 md:pb-14">
